@@ -1,3 +1,5 @@
 from django.db import models
 
-# Create your models here.
+class ImageUpload(models.Model):
+    description = models.TextField()
+    image = models.ImageField(upload_to='images/')

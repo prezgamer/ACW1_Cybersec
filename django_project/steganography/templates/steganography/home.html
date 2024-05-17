@@ -6,8 +6,11 @@
 <meta name="keywords" content="html tutorial template">
 </head>
 <body>
- <h1>
-    Steganography
- </h1>
+   <h1>Upload an Image and Enter Text</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
 </body>
 </html>

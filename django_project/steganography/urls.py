@@ -3,4 +3,5 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='steganography-home'),
+    path('success/', views.success, name='success'),
 ]
