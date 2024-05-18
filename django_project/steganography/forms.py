@@ -1,7 +1,7 @@
 from django import forms
-from .models import ImageUpload
+from .models import StegImage
 
-class ImageUploadForm(forms.ModelForm):
+class StegImageForm(forms.ModelForm):
     class Meta:
-        model = ImageUpload
-        fields = ['description', 'image']
+        model = StegImage
+        fields = ['image', 'hidden_message']
