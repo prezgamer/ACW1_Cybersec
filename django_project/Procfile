@@ -1,0 +1,1 @@
+web: gunicorn C:\Users\ffjan\OneDrive\Desktop\Cybersec\Project1\ACW1_Cybersec\django_project.wsgi --log-file -
