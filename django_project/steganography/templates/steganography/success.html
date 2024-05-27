@@ -7,6 +7,8 @@
 </head>
 <body>
     <h1>Upload Successful</h1>
-    <p>Your image and description have been successfully uploaded.</p>
+    <p>Your cover image and payload have been successfully uploaded and processed.</p>
+    <p><a href="{% url 'home' %}">Upload another image</a></p>
+    <p><a href="{% url 'stego_detail' stego_object.id %}">View Stego Image</a></p>
 </body>
 </html>

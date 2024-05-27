@@ -19,5 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('steganography.urls')),
+    path('steganography/', include('steganography.urls')),
+    path('', include('steganography.urls')),  # This line ensures the root URL points to the steganography app
 ]
+

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stego Object Detail</title>
+</head>
+<body>
+    <h1>Stego Object Detail</h1>
+    <p>Cover Image: {{ stego_object.cover_image.description }}</p>
+    <img src="{{ stego_object.cover_image.image.url }}" alt="Cover Image">
+    <p>Payload Description: {{ stego_object.payload.description }}</p>
+    <p>Stego Image:</p>
+    <img src="{{ stego_object.stego_image.url }}" alt="Stego Image">
+</body>
+</html>

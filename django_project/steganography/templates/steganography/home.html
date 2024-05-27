@@ -1,15 +1,23 @@
 <!doctype html>
 <html>
 <head>
-<title>Steganography Encoder/Decoder</title>
-<meta name="description" content="Our first page">
-<meta name="keywords" content="html tutorial template">
+    <title>Steganography Encoder/Decoder</title>
+    <meta name="description" content="Our first page">
+    <meta name="keywords" content="html tutorial template">
 </head>
 <body>
-   <h1>Upload an Image and Enter Text</h1>
+    <h1>Upload Cover Image and Enter Payload</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
+        <h2>Cover Image</h2>
+        {{ image_form.as_p }}
+        
+        <h2>Payload</h2>
+        {{ payload_form.as_p }}
+
+        <h2>Select Number of LSBs to Use</h2>
+        {{ lsb_form.as_p }}
+        
         <button type="submit">Submit</button>
     </form>
 </body>
