@@ -4,9 +4,38 @@
     <title>Steganography Encoder/Decoder</title>
     <meta name="description" content="Our first page">
     <meta name="keywords" content="html tutorial template">
+    <style>
+        .dropzone {
+            width: 300px;
+            height: 300px;
+            border: 2px dashed #cccccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 20px auto;
+            position: relative;
+        }
+        .dropzone.dragover {
+            border-color: #666666;
+            background-color: #f0f0f0;
+        }
+        .dropzone img {
+            max-width: 100%;
+            max-height: 100%;
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
 </head>
 <body>
     <h1>Upload Cover Image and Enter Payload</h1>
+    <div class="dropzone" id="dropzone">
+        Drop an image here
+        <img id="preview" src="#" alt="Image Preview">
+    </div>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <h2>Cover Image</h2>
@@ -20,5 +49,65 @@
         
         <button type="submit">Submit</button>
     </form>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        const dropzone = document.getElementById('dropzone');
+        const form = document.getElementById('upload-form');
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const preview = document.getElementById('preview');
+
+        dropzone.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('dragover');
+        });
+
+        dropzone.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropzone.classList.remove('dragover');
+
+            const files = event.dataTransfer.files;
+            if (files.length > 1) {
+                alert('Please drop only one image.');
+                return;
+            }
+
+            const file = files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+
+            const formData = new FormData(form);
+            formData.append('image', file);
+            
+            $.ajax({
+                url: '',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                success: (response) => {
+                    if (response.status === 'success') {
+                        alert('Image uploaded successfully');
+                    } else {
+                        alert('Failed to upload image');
+                    }
+                },
+                error: (error) => {
+                    console.error('Error:', error);
+                    alert('An error occurred while uploading the image.');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
