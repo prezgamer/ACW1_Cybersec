@@ -60,3 +60,65 @@ def home(request):
 def stego_detail(request, pk):
     stego_object = StegoObject.objects.get(pk=pk)
     return render(request, 'steganography/stego_detail.html', {'stego_object': stego_object})
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.conf import settings
+from .forms import StegoImageForm
+from .models import StegoImage
+import cv2
+import numpy as np
+import math
+from os import path
+
+BITS = 2 #change this OG IS 2
+HIGH_BITS = 256 - (1 << BITS) #ima change this too
+LOW_BITS = (1 << BITS) - 1
+BYTES_PER_BYTE = math.ceil(8 / BITS)
+FLAG = '%'
+
+def encode(block, data):
+    data = ord(data)
+    for idx in range(len(block)):
+        block[idx] &= HIGH_BITS
+        block[idx] |= (data >> (BITS * idx)) & LOW_BITS
+
+def insert(img_path, msg):
+    img = cv2.imread(img_path, cv2.IMREAD_ANYCOLOR)
+    if img is None:
+        raise ValueError(f"Could not open or read the image file: {img_path}")
+    ori_shape = img.shape
+    max_bytes = ori_shape[0] * ori_shape[1] // BYTES_PER_BYTE
+    msg = '{}{}{}'.format(len(msg), FLAG, msg)
+    assert max_bytes >= len(msg), "Message greater than capacity:{}".format(max_bytes)
+    data = np.reshape(img, -1)
+    for (idx, val) in enumerate(msg):
+        encode(data[idx * BYTES_PER_BYTE: (idx + 1) * BYTES_PER_BYTE], val)
+    img = np.reshape(data, ori_shape)
+    filename = path.splitext(img_path)[0] + '_lsb_embeded.png'
+    cv2.imwrite(filename, img)
+    return filename
+
+def testing(request):
+    if request.method == 'POST':
+        form = StegoImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            stego_image = form.save(commit=False)
+            stego_image.original_image = request.FILES['original_image']
+            stego_image.save()
+            original_image_path = stego_image.original_image.path
+            message = stego_image.message
+            try:
+                stego_image_path = insert(original_image_path, message)
+                stego_image.stego_image.name = stego_image_path
+                stego_image.save()
+                return redirect('result', pk=stego_image.pk)
+            except Exception as e:
+                form.add_error(None, f"Error embedding message: {e}")
+    else:
+        form = StegoImageForm()
+    return render(request, 'steganography/testing.html', {'form': form})
+
+def result(request, pk):
+    stego_image = get_object_or_404(StegoImage, pk=pk)
+    return render(request, 'steganography/result.html', {'stego_image': stego_image})

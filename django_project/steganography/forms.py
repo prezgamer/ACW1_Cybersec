@@ -13,3 +13,11 @@ class PayloadForm(forms.ModelForm):
 
 class LSBSelectionForm(forms.Form):
     num_lsbs = forms.IntegerField(min_value=1, max_value=8, label="Number of LSBs")
+
+from .models import StegoImage
+
+class StegoImageForm(forms.ModelForm):
+    class Meta:
+        model = StegoImage
+        fields = ['original_image', 'message']
+
