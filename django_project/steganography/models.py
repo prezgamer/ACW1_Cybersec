@@ -6,7 +6,6 @@ class ImageUpload(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
 class Payload(models.Model):
-    description = models.TextField()
     file = models.FileField(upload_to='payloads/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 

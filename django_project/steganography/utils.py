@@ -19,3 +19,4 @@ def modify_lsb(cover_data, payload_data, num_lsbs):
             cover_bits[i] = cover_byte
 
     return bytes(cover_bits)
+

@@ -9,7 +9,7 @@ class ImageUploadForm(forms.ModelForm):
 class PayloadForm(forms.ModelForm):
     class Meta:
         model = Payload
-        fields = ['description', 'file']
+        fields = ['file']
 
 class LSBSelectionForm(forms.Form):
     num_lsbs = forms.IntegerField(min_value=1, max_value=8, label="Number of LSBs")
