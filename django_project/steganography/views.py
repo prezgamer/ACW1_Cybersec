@@ -70,6 +70,10 @@ import cv2
 import numpy as np
 import math
 from os import path
+import os
+from django.core.files.uploadedfile import SimpleUploadedFile
+from .forms import StegoDecodeForm
+
 
 BITS = 2 #change this OG IS 2
 HIGH_BITS = 256 - (1 << BITS) #ima change this too
@@ -83,7 +87,7 @@ def encode(block, data):
         block[idx] &= HIGH_BITS
         block[idx] |= (data >> (BITS * idx)) & LOW_BITS
 
-def insert(img_path, msg):
+def insert(img_path, msg, output_path):
     img = cv2.imread(img_path, cv2.IMREAD_ANYCOLOR)
     if img is None:
         raise ValueError(f"Could not open or read the image file: {img_path}")
@@ -95,9 +99,11 @@ def insert(img_path, msg):
     for (idx, val) in enumerate(msg):
         encode(data[idx * BYTES_PER_BYTE: (idx + 1) * BYTES_PER_BYTE], val)
     img = np.reshape(data, ori_shape)
-    filename = path.splitext(img_path)[0] + '_lsb_embeded.png'
-    cv2.imwrite(filename, img)
-    return filename
+    #filename = path.splitext(img_path)[0] + '_lsb_embeded.png'
+    cv2.imwrite(output_path, img)
+    #cv2.imwrite(filename, img)
+    return output_path
+    #return filename
 
 def testing(request):
     if request.method == 'POST':
@@ -108,9 +114,15 @@ def testing(request):
             stego_image.save()
             original_image_path = stego_image.original_image.path
             message = stego_image.message
+
+             # Define a static file name and path
+            static_file_name = "stego_image.png"
+            output_path = os.path.join('images/input/', "stego_images", static_file_name)
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
             try:
-                stego_image_path = insert(original_image_path, message)
-                stego_image.stego_image.name = stego_image_path
+                stego_image_path = insert(original_image_path, message,output_path)
+                stego_image.stego_image.name =  os.path.join("stego_images", static_file_name)
                 stego_image.save()
                 return redirect('result', pk=stego_image.pk)
             except Exception as e:
@@ -122,3 +134,53 @@ def testing(request):
 def result(request, pk):
     stego_image = get_object_or_404(StegoImage, pk=pk)
     return render(request, 'steganography/result.html', {'stego_image': stego_image})
+
+
+#DECODING
+
+
+
+def decode(block):
+    val = 0
+    for idx in range(len(block)):
+        val |= (block[idx] & LOW_BITS) << (idx * BITS)
+    return chr(val)
+
+def extract(path):
+    img = cv2.imread(path, cv2.IMREAD_ANYCOLOR)
+    data = np.reshape(img, -1)
+    total = data.shape[0]
+    res = ''
+    idx = 0
+    while idx < total // BYTES_PER_BYTE:
+        ch = decode(data[idx * BYTES_PER_BYTE: (idx + 1) * BYTES_PER_BYTE])
+        idx += 1
+        if ch == FLAG:
+            break
+        res += ch
+    end = int(res) + idx
+    assert end <= total // BYTES_PER_BYTE, "Input image isn't correct."
+    secret = ''
+    while idx < end:
+        secret += decode(data[idx * BYTES_PER_BYTE: (idx + 1) * BYTES_PER_BYTE])
+        idx += 1
+    return secret
+
+def decode_image(request):
+    if request.method == 'POST':
+        form = StegoDecodeForm(request.POST, request.FILES)
+        if form.is_valid():
+            stego_image = request.FILES['stego_image']
+            file_path = os.path.join('images/input', stego_image.name)
+            with open(file_path, 'wb+') as destination:
+                for chunk in stego_image.chunks():
+                    destination.write(chunk)
+            try:
+                decoded_message = extract(file_path)
+                os.remove(file_path)  # Clean up the temporary file
+                return render(request, 'steganography/decode_result.html', {'message': decoded_message})
+            except Exception as e:
+                form.add_error(None, f"Error decoding message: {e}")
+    else:
+        form = StegoDecodeForm()
+    return render(request, 'steganography/decode_image.html', {'form': form})

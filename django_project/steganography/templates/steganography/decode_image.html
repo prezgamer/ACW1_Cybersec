@@ -1,0 +1,15 @@
+<!-- decode_image.html -->
+
+{% block content %}
+  <h2>Decode Stego Image</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Decode</button>
+  </form>
+  {% if form.non_field_errors %}
+    <div class="error">
+      {{ form.non_field_errors }}
+    </div>
+  {% endif %}
+{% endblock %}

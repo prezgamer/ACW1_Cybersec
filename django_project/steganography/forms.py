@@ -21,3 +21,5 @@ class StegoImageForm(forms.ModelForm):
         model = StegoImage
         fields = ['original_image', 'message']
 
+class StegoDecodeForm(forms.Form):
+    stego_image = forms.ImageField(label="Stego Image")
