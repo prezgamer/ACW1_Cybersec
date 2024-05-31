@@ -12,7 +12,7 @@ class PayloadForm(forms.ModelForm):
         fields = ['file']
 
 class LSBSelectionForm(forms.Form):
-    num_lsbs = forms.IntegerField(min_value=0, max_value=7, label="Number of LSBs")
+    num_lsbs = forms.IntegerField(min_value=1, max_value=8, label="Number of LSBs")
 
 from .models import StegoImage
 
