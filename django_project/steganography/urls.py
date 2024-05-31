@@ -7,5 +7,5 @@ urlpatterns = [
     path('testing/',views.testing,name = 'testing'),
     path('result/<int:pk>/',views.result,name = 'result'),
     path('decode/', views.decode_image, name='decode_image'),  # Add this line
-
+    path('lsb/', views.lsb_view, name='lsb_view'),
 ]
