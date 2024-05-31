@@ -11,9 +11,6 @@
         {% csrf_token %}
         {{ form.as_p }}
 
-        <h2>Select Number of LSBs to Use (Max: 7)</h2>
-        <input type="number" name="Number of LSBs" min="0" max="7" required>
-
         <button type="submit">Submit</button>
     </form>
 </body>

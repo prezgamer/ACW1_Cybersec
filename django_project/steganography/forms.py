@@ -17,9 +17,11 @@ class LSBSelectionForm(forms.Form):
 from .models import StegoImage
 
 class StegoImageForm(forms.ModelForm):
+    num_lsbs = forms.IntegerField(min_value=0, max_value=7, label="Number of LSBs")
     class Meta:
         model = StegoImage
-        fields = ['original_image', 'message']
+        fields = ['original_image', 'message','num_lsbs']
 
 class StegoDecodeForm(forms.Form):
     stego_image = forms.ImageField(label="Stego Image")
+    num_lsbs = forms.IntegerField(min_value=0, max_value=7, label="Number of LSBs")
