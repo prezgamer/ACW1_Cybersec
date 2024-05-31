@@ -80,7 +80,7 @@ HIGH_BITS = 256 - (1 << BITS) #ima change this too
 LOW_BITS = (1 << BITS) - 1
 BYTES_PER_BYTE = math.ceil(8 / BITS)
 FLAG = '%'
-
+TEXTBOX_VALUE = ''
 def encode(block, data):
     data = ord(data)
     for idx in range(len(block)):
@@ -104,6 +104,18 @@ def insert(img_path, msg, output_path):
     #cv2.imwrite(filename, img)
     return output_path
     #return filename
+
+def lsb_view(request):
+
+    if request.method == 'POST':
+        form = LSBSelectionForm(request.POST)
+        if form.is_valid():
+            # Store the entered number into the global variable BITS
+            BITS = form.cleaned_data['Number of LSBs']
+    else:
+        form = LSBSelectionForm()
+
+    #return render(request, 'steganography/testing.html', {'form': form})
 
 def testing(request):
     if request.method == 'POST':
@@ -137,9 +149,6 @@ def result(request, pk):
 
 
 #DECODING
-
-
-
 def decode(block):
     val = 0
     for idx in range(len(block)):
@@ -184,3 +193,5 @@ def decode_image(request):
     else:
         form = StegoDecodeForm()
     return render(request, 'steganography/decode_image.html', {'form': form})
+
+
