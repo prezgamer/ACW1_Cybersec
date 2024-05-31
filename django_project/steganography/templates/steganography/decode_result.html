@@ -3,5 +3,6 @@
 {% block content %}
   <h2>Decoded Message</h2>
   <p>{{ message }}</p>
-  <a href="{% url 'decode_image' %}">Decode another image</a>
+  <p><a href="{% url 'testing' %}">Encode another image</a></p>
+  <p><a href="{% url 'decode_image' %}">Decode another image</a></p>
 {% endblock %}

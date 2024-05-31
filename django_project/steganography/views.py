@@ -75,12 +75,13 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from .forms import StegoDecodeForm
 
 
-BITS = 2 #change this OG IS 2
+BITS = 6 #change this OG IS 2
 HIGH_BITS = 256 - (1 << BITS) #ima change this too
 LOW_BITS = (1 << BITS) - 1
 BYTES_PER_BYTE = math.ceil(8 / BITS)
 FLAG = '%'
 TEXTBOX_VALUE = ''
+
 def encode(block, data):
     data = ord(data)
     for idx in range(len(block)):

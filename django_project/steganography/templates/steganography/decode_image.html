@@ -2,6 +2,8 @@
 
 {% block content %}
   <h2>Decode Stego Image</h2>
+  <a href="{% url 'testing' %}">Encode image</a>
+
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
