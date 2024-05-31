@@ -5,10 +5,15 @@
 </head>
 <body>
     <h1>Embed a Secret Message in an Image</h1>
+    <p>Input Number of LSBs to Use (Max: 7)</p>
+    <br>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
+
         <button type="submit">Submit</button>
+        <br>
+        <a href="{% url 'decode_image' %}">Decode image</a>
     </form>
 </body>
 </html>

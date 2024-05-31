@@ -9,5 +9,9 @@
     <img src="{{ stego_image.original_image.url }}" alt="Original Image">
     <p>Stego Image:</p>
     <img src="{{ stego_image.stego_image.url }}" alt="Stego Image">
+    <br>
+    <p><a href="{% url 'testing' %}">Encode another image</a></p>
+    <p>    <a href="{% url 'decode_image' %}">Decode the image</a></p>
+
 </body>
 </html>

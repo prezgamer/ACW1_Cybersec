@@ -106,6 +106,7 @@ def insert(img_path, msg, output_path):
     #return filename
 
 def testing(request):
+    global BITS, HIGH_BITS, LOW_BITS, BYTES_PER_BYTE
     if request.method == 'POST':
         form = StegoImageForm(request.POST, request.FILES)
         if form.is_valid():
@@ -114,6 +115,11 @@ def testing(request):
             stego_image.save()
             original_image_path = stego_image.original_image.path
             message = stego_image.message
+            # Store the entered number into the global variable BITS
+            BITS = form.cleaned_data['num_lsbs']
+            HIGH_BITS = 256 - (1 << BITS)
+            LOW_BITS = (1 << BITS) - 1
+            BYTES_PER_BYTE = math.ceil(8 / BITS)
 
              # Define a static file name and path
             static_file_name = "stego_image.png"
@@ -137,9 +143,6 @@ def result(request, pk):
 
 
 #DECODING
-
-
-
 def decode(block):
     val = 0
     for idx in range(len(block)):
@@ -167,11 +170,18 @@ def extract(path):
     return secret
 
 def decode_image(request):
+    global BITS, HIGH_BITS, LOW_BITS, BYTES_PER_BYTE
     if request.method == 'POST':
         form = StegoDecodeForm(request.POST, request.FILES)
         if form.is_valid():
             stego_image = request.FILES['stego_image']
             file_path = os.path.join('images/input', stego_image.name)
+            # Store the entered number into the global variable BITS
+            BITS = form.cleaned_data['num_lsbs']
+            HIGH_BITS = 256 - (1 << BITS)
+            LOW_BITS = (1 << BITS) - 1
+            BYTES_PER_BYTE = math.ceil(8 / BITS)
+            
             with open(file_path, 'wb+') as destination:
                 for chunk in stego_image.chunks():
                     destination.write(chunk)
