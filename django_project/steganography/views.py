@@ -5,7 +5,7 @@ from .models import ImageUpload, Payload, StegoObject
 from django.core.files.base import ContentFile
 from PIL import Image, UnidentifiedImageError
 import io
-
+#this
 def home(request):
     if request.method == 'POST':
         image_form = ImageUploadForm(request.POST, request.FILES)
@@ -125,7 +125,7 @@ def testing(request):
             static_file_name = "stego_image.png"
             output_path = os.path.join('images/input/', "stego_images", static_file_name)
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
-
+            
             try:
                 stego_image_path = insert(original_image_path, message,output_path)
                 stego_image.stego_image.name =  os.path.join("stego_images", static_file_name)
