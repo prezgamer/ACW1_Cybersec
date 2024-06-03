@@ -5,6 +5,10 @@ from .models import ImageUpload, Payload, StegoObject
 from django.core.files.base import ContentFile
 from PIL import Image, UnidentifiedImageError
 import io
+
+from django.conf import settings
+
+
 #this
 def home(request):
     if request.method == 'POST':
@@ -126,7 +130,9 @@ def testing(request):
             
             #Define a static file name and path
             static_file_name = "stego_image.png"
-            output_path = os.path.join('images/input/', "stego_images", static_file_name)
+            # output_path = os.path.join('images/input/', "stego_images", static_file_name)
+            output_path = os.path.join(settings.MEDIA_ROOT, "stego_images", static_file_name)
+
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             
             try:
@@ -197,5 +203,3 @@ def decode_image(request):
     else:
         form = StegoDecodeForm()
     return render(request, 'steganography/decode_image.html', {'form': form})
-
-
