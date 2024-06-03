@@ -2,16 +2,29 @@
 <html>
 <head>
     <title>Steganography Result</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+<style>
+    h1{
+        font-size: 24px;
+    }
+</style>
 </head>
 <body>
-    <h1>Steganography Result</h1>
-    <p>Original Image:</p>
-    <img src="{{ stego_image.original_image.url }}" alt="Original Image">
-    <p>Stego Image:</p>
-    <img src="{{ stego_image.stego_image.url }}" alt="Stego Image">
+    
+    <section class="section">
+        <h1><u>Steganography Result:</u></h1>
+        <div class="container" style="display: flex; margin-top: 20px;">
+            <p>Original Image:</p>
+            <img src="{{ stego_image.original_image.url }}" alt="Original Image">
+            <p>Stego Image:</p>
+            <img src="{{ stego_image.stego_image.url }}" alt="Stego Image">
+        </div>
 
-    <p><a href="{% url 'testing' %}">Encode another image</a></p>
-    <p><a href="{% url 'decode_image' %}">Decode the image</a></p>
-
+        <div class="container" style="display: flex; margin-top: 100px; justify-content: space-evenly;">
+        <a href="{% url 'testing' %}" class="button is-link">Encode another image </a>
+        <a href="{% url 'decode_image' %}" class="button is-link">Decode the image</a>
+    </div>
+    </section>
 </body>
+
 </html>
