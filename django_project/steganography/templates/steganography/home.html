@@ -1,15 +1,59 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Steganography Encoder/Decoder</title>
     <meta name="description" content="Our first page">
     <meta name="keywords" content="html tutorial template">
 </head>
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+
+h1, h2 {
+    color: #333;
+}
+
+form {
+    width: 90%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+}
+
+form p {
+    color: rgb(0, 80, 199);
+}
+
+button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+button:hover {
+    background-color: #2f6d31; /* Green */
+}
+</style>
 <body>
+    <div style= "margin-left: 60px;">
     <h1>Upload Cover Image and Enter Payload</h1>
     {% if error %}
     <p style="color: red;">{{ error }}</p>
     {% endif %}
+</div>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <h2>Cover Image</h2>
