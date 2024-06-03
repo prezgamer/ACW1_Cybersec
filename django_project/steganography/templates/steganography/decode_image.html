@@ -18,19 +18,26 @@
             max-width: 100%;
             margin-top: 10px;
         }
+        .control input 
+        {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
     <section class="section">
         <div class="container">
-            <h2 class="title">Decode Stego Image</h2>
-            <a href="{% url 'testing' %}" class="button is-link">Encode Image</a>
+            <a href="{% url 'testing' %}"style="margin-bottom:30px;" class="button is-link">Encode Image</a>
+        </div>
+        <div class="container">
+            <h2 class="title"><u>Decode Stego Image</u></h2>
+            
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.non_field_errors }}
-                <div class="field">
-                    <label class="label">Number of LSBs</label>
-                    <div class="control">
+                <div class="field" style="display: flex; white-space: nowrap; ">
+                    <label class="label">Number of LSBs: </label>
+                    <div class="control" style="padding-left: 10px; width: 100%;" >
                         {{ form.num_lsbs }}
                     </div>
                 </div>
@@ -44,7 +51,7 @@
                 </div>
                 <div class="field">
                     <div class="control">
-                        <button type="submit" class="button is-primary">Decode</button>
+                        <button type="submit" class="button is-primary " style="width: 100%;">Decode</button>
                     </div>
                 </div>
             </form>
