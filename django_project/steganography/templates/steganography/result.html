@@ -9,6 +9,7 @@
             align-items: center;
             margin-top: 20px;
             flex-wrap: wrap;
+            justify-content: space-evenly;
         }
         .image-container p {
             margin-right: 10px;
@@ -25,7 +26,7 @@
     <section class="section">
         <h1 class="title"><u>Steganography Result:</u></h1>
         <div class="container">
-            <div class="image-container">
+            <div class="image-container ">
                 <div>
                     <p>Original Image:</p>
                     <img src="{{ stego_image.original_image.url }}" alt="Original Image">
