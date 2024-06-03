@@ -3,28 +3,46 @@
 <head>
     <title>Steganography Result</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
-<style>
-    h1{
-        font-size: 24px;
-    }
-</style>
+    <style>
+        .image-container {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .image-container p {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        .image-container img {
+            margin-right: 20px;
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
 </head>
 <body>
-    
     <section class="section">
-        <h1><u>Steganography Result:</u></h1>
-        <div class="container" style="display: flex; margin-top: 20px;">
-            <p>Original Image:</p>
-            <img src="{{ stego_image.original_image.url }}" alt="Original Image">
-            <p>Stego Image:</p>
-            <img src="{{ stego_image.stego_image.url }}" alt="Stego Image">
+        <h1 class="title"><u>Steganography Result:</u></h1>
+        <div class="container">
+            <div class="image-container">
+                <div>
+                    <p>Original Image:</p>
+                    <img src="{{ stego_image.original_image.url }}" alt="Original Image">
+                </div>
+                <div>
+                    <p>Stego Image:</p>
+                    <img src="{{ stego_image.stego_image.url }}" alt="Stego Image">
+                </div>
+            </div>
         </div>
 
-        <div class="container" style="display: flex; margin-top: 100px; justify-content: space-evenly;">
-        <a href="{% url 'embed' %}" class="button is-link">Encode another image </a>
-        <a href="{% url 'decode_image' %}" class="button is-link">Decode the image</a>
-    </div>
+        <div class="container" style="margin-top: 100px;">
+            <div class="buttons are-medium is-centered">
+                <a href="{% url 'embed' %}" class="button is-link">Encode another image</a>
+                <a href="{% url 'decode_image' %}" class="button is-link">Decode the image</a>
+            </div>
+        </div>
     </section>
 </body>
-
 </html>
