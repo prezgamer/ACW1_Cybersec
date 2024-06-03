@@ -1,8 +1,24 @@
-<!-- decode_result.html -->
-
-{% block content %}
-  <h2>Decoded Message</h2>
-  <p>{{ message }}</p>
-  <p><a href="{% url 'testing' %}">Encode another image</a></p>
-  <p><a href="{% url 'decode_image' %}">Decode another image</a></p>
-{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Decoded Message</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="box">
+                <h2 class="title">Decoded Message</h2>
+                <div class="content">
+                    <h3 class="subtitle">Message Text</h3>
+                    <p class="notification is-primary">{{ message }}</p>
+                </div>
+            </div>
+            <div class="buttons">
+                <a href="{% url 'testing' %}" class="button is-link">Encode another image</a>
+                <a href="{% url 'decode_image' %}" class="button is-info">Decode another image</a>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

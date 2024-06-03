@@ -1,17 +1,102 @@
-<!-- decode_image.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Decode Stego Image</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+    <style>
+        #drop-area {
+            border: 2px dashed #009688;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        #drop-area.hover {
+            border-color: #333;
+        }
+        #drop-area img {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h2 class="title">Decode Stego Image</h2>
+            <a href="{% url 'testing' %}" class="button is-link">Encode Image</a>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="field">
+                    <label class="label">Number of LSBs</label>
+                    <div class="control">
+                        {{ form.num_lsbs }}
+                    </div>
+                </div>
+                <div class="field">
+                    <div id="drop-area">
+                        <p>Drag and drop an image here or click to select one</p>
+                        <input type="file" id="fileElem" accept="image/*" style="display:none" name="stego_image">
+                        <img id="preview" src="#" alt="Image preview" style="display:none;">
+                    </div>
+                    {{ form.stego_image.errors }}
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <button type="submit" class="button is-primary">Decode</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+    <script>
+        (function() {
+            let dropArea = document.getElementById('drop-area');
+            let fileInput = document.getElementById('fileElem');
+            let preview = document.getElementById('preview');
 
-{% block content %}
-  <h2>Decode Stego Image</h2>
-  <a href="{% url 'testing' %}">Encode image</a>
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
 
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Decode</button>
-  </form>
-  {% if form.non_field_errors %}
-    <div class="error">
-      {{ form.non_field_errors }}
-    </div>
-  {% endif %}
-{% endblock %}
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => dropArea.classList.add('hover'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => dropArea.classList.remove('hover'), false);
+            });
+
+            dropArea.addEventListener('drop', handleDrop, false);
+            dropArea.addEventListener('click', () => fileInput.click(), false);
+            fileInput.addEventListener('change', handleFiles, false);
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            function handleDrop(e) {
+                let dt = e.dataTransfer;
+                let files = dt.files;
+                handleFiles({ target: { files } });
+            }
+
+            function handleFiles(e) {
+                let files = e.target.files;
+                if (files.length > 0) {
+                    let file = files[0];
+                    let reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onloadend = function() {
+                        preview.src = reader.result;
+                        preview.style.display = 'block';
+                    };
+                    fileInput.files = files;  // Set the file input's files property
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
