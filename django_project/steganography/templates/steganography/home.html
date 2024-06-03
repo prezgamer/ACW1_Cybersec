@@ -2,26 +2,17 @@
 <html>
 <head>
     <title>Steganography Encoder/Decoder</title>
-    <meta name="description" content="Our first page">
-    <meta name="keywords" content="html tutorial template">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
 </head>
 <body>
-    <h1>Upload Cover Image and Enter Payload</h1>
-    {% if error %}
-    <p style="color: red;">{{ error }}</p>
-    {% endif %}
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <h2>Cover Image</h2>
-        {{ image_form.as_p }}
-        
-        <h2>Payload</h2>
-        {{ payload_form.as_p }}
-
-        <h2>Select Number of LSBs to Use (Max: 8)</h2>
-        {{ lsb_form.as_p }}
-        
-        <button type="submit">Submit</button>
-    </form>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Steganography Encoder/Decoder</h1>
+            <div class="buttons">
+                <a href="{% url 'testing' %}" class="button is-primary">Encode Image</a>
+                <a href="{% url 'decode_image' %}" class="button is-link">Decode Image</a>
+            </div>
+        </div>
+    </section>
 </body>
 </html>
