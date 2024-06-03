@@ -18,13 +18,24 @@
             max-width: 100%;
             margin-top: 10px;
         }
+        .control input 
+        {
+            width: 100%;
+        }
+
+        .control textarea {
+        width: 100%;
+    }
     </style>
 </head>
 <body>
     <section class="section">
         <div class="container">
-            <h1 class="title">Embed a Secret Message in an Image</h1>
-            <a href="{% url 'decode_image' %}" class="button is-link">Decode Image</a>
+            <a href="{% url 'decode_image' %}" style="margin-bottom:30px;" class="button is-link">Decode Image</a>
+        </div>
+        <div class="container">
+            <h1 class="title"><u>Embed a Secret Message in an Image</u></h1>
+
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.non_field_errors }}
@@ -34,7 +45,7 @@
                         {{ form.message }}
                     </div>
                 </div>
-                <div class="field">
+                <div class="field" style="width: 100%;">
                     <label class="label">Number of LSBs</label>
                     <div class="control">
                         {{ form.num_lsbs }}
@@ -50,10 +61,12 @@
                 </div>
                 <div class="field">
                     <div class="control">
-                        <button type="submit" class="button is-primary">Submit</button>
+                        <button type="submit" style="float:right; width: 100%;" class="button is-primary">Embed</button>
                     </div>
                 </div>
+                
             </form>
+            
         </div>
     </section>
     <script>
