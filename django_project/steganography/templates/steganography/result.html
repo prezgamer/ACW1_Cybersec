@@ -5,43 +5,57 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
     <style>
         .image-container {
-            display: flex;
-            align-items: center;
             margin-top: 20px;
-            flex-wrap: wrap;
-            justify-content: space-evenly;
+            padding: 20px;
         }
-        .image-container p {
-            margin-right: 10px;
+        .image-box {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .image-box p {
             font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
-        .image-container img {
-            margin-right: 20px;
+        .image-box img {
             max-width: 100%;
             height: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+        }
+        .buttons-container {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+        }
+        .button {
+            margin: 0 10px;
+            font-size: 18px;
+        }
+        .button:hover {
+            background-color: #3273dc;
+            color: white;
         }
     </style>
 </head>
 <body>
     <section class="section">
-        <h1 class="title"><u>Steganography Result:</u></h1>
         <div class="container">
-            <div class="image-container ">
-                <div>
+            <h1 class="title has-text-centered"><u>Steganography Result</u></h1>
+            <div class="columns image-container">
+                <div class="column is-half image-box">
                     <p>Original Image:</p>
                     <img src="{{ stego_image.original_image.url }}" alt="Original Image">
                 </div>
-                <div>
+                <div class="column is-half image-box">
                     <p>Stego Image:</p>
                     <img src="{{ stego_image.stego_image.url }}" alt="Stego Image">
                 </div>
             </div>
-        </div>
-
-        <div class="container" style="margin-top: 100px;">
-            <div class="buttons are-medium is-centered">
-                <a href="{% url 'embed' %}" class="button is-link">Encode another image</a>
-                <a href="{% url 'decode_image' %}" class="button is-link">Decode the image</a>
+            <div class="buttons-container">
+                <a href="{% url 'embed' %}" class="button is-link is-medium">Encode another image</a>
+                <a href="{% url 'decode_image' %}" class="button is-link is-medium">Decode the image</a>
             </div>
         </div>
     </section>
