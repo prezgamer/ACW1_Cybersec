@@ -111,7 +111,7 @@ def insert(img_path, msg, output_path):
     #return filename
 
 
-def testing(request):
+def embed(request):
     global BITS, HIGH_BITS, LOW_BITS, BYTES_PER_BYTE
     if request.method == 'POST':
         form = StegoImageForm(request.POST, request.FILES)
@@ -144,7 +144,7 @@ def testing(request):
                 form.add_error(None, f"Error embedding message: {e}")
     else:
         form = StegoImageForm()
-    return render(request, 'steganography/testing.html', {'form': form})
+    return render(request, 'steganography/embed.html', {'form': form})
 
 def result(request, pk):
     stego_image = get_object_or_404(StegoImage, pk=pk)
