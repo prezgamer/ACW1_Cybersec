@@ -2,22 +2,57 @@
 <html>
 <head>
     <title>Decoded Message</title>
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+    <style>
+        .message-container {
+            margin-top: 20px;
+            padding: 20px;
+            text-align: center;
+        }
+        .message-box {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .message-box p {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .message-box .notification {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .buttons-container {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+        }
+        .button {
+            margin: 0 10px;
+            font-size: 18px;
+        }
+        .button:hover {
+            background-color: #3273dc;
+            color: white;
+        }
+        h1.title {
+            margin-bottom: 30px;
+        }
     </style>
 </head>
 <body>
     <section class="section">
         <div class="container">
-            <div class="box">
-                <h2 class="title">Decoded Message</h2>
-                <div class="content">
-                    <h3 class="subtitle">Message Text</h3>
-                    <p class="notification is-primary">{{ message }}</p>
+            <h1 class="title has-text-centered"><u>Decoded Message</u></h1>
+            <div class="message-container">
+                <div class="message-box">
+                    <p>Message Text:</p>
+                    <div class="notification is-primary">{{ message }}</div>
                 </div>
             </div>
-            <div class="buttons">
-                <a href="{% url 'embed' %}" class="button is-link" >Encode another image</a>
-                <a href="{% url 'decode_image' %}" class="button is-info">Decode another image</a>
+            <div class="buttons-container">
+                <a href="{% url 'embed' %}" class="button is-primary">Encode New Image</a>
+                <a href="{% url 'decode_image' %}" class="button is-link">Decode Another Image</a>
             </div>
         </div>
     </section>
