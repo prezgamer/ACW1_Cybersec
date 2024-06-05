@@ -5,6 +5,8 @@ from .models import ImageUpload, Payload, StegoObject
 from django.core.files.base import ContentFile
 from PIL import Image, UnidentifiedImageError
 import io
+import wave
+import numpy as np
 
 from django.conf import settings
 
@@ -203,3 +205,61 @@ def decode_image(request):
     else:
         form = StegoDecodeForm()
     return render(request, 'steganography/decode_image.html', {'form': form})
+
+
+# def encode_audio(audio_file_path, hidden_message, output_file_path, lsb_count=1):
+#     with wave.open(audio_file_path, 'rb') as audio_file:
+#         params = audio_file.getparams()
+#         frames = audio_file.readframes(params.nframes)
+#         frame_bytes = bytearray(list(frames))
+        
+#         # Convert the hidden message to bits
+#         message_bits = ''.join([format(ord(char), '08b') for char in hidden_message])
+#         delimiter = '1' * lsb_count * 2  # Delimiter to indicate end of message
+#         message_bits += delimiter
+        
+#         data_index = 0
+#         for i in range(len(frame_bytes)):
+#             if data_index < len(message_bits):
+#                 bits_to_write = int(message_bits[data_index:data_index + lsb_count], 2)
+#                 frame_bytes[i] = (frame_bytes[i] & (255 << lsb_count)) | bits_to_write
+#                 data_index += lsb_count
+        
+#         with wave.open(output_file_path, 'wb') as dest_file:
+#             dest_file.setparams(params)
+#             dest_file.writeframes(bytes(frame_bytes))
+    
+#     return frames, frame_bytes
+
+# def decode_audio(audio_file_path, lsb_count=1):
+#     with wave.open(audio_file_path, 'rb') as audio_file:
+#         frames = audio_file.readframes(audio_file.getnframes())
+#         frame_bytes = bytearray(list(frames))
+        
+#         extracted_bits = ''.join([format(frame_bytes[i] & ((1 << lsb_count) - 1), f'0{lsb_count}b') for i in range(len(frame_bytes))])
+        
+#         # Find the delimiter to stop reading bits
+#         delimiter = '1' * lsb_count * 2
+#         end_index = extracted_bits.find(delimiter)
+#         if end_index != -1:
+#             extracted_bits = extracted_bits[:end_index]
+        
+#         message_bytes = [extracted_bits[i:i+8] for i in range(0, len(extracted_bits), 8)]
+#         message = ''.join([chr(int(byte, 2)) for byte in message_bytes if len(byte) == 8])
+        
+#         return message
+
+# def testaudio():
+#     audio_file_path = "Sample.wav"
+#     hidden_message = "Hello, World!"
+#     output_file_path = "Encoded_Sample.wav"
+#     lsb_count = 8  # Number of LSBs to use for encoding
+    
+#     original_frames, encoded_frames = encode_audio(audio_file_path, hidden_message, output_file_path, lsb_count)
+#     decoded_message = decode_audio(output_file_path, lsb_count)
+    
+#     print("Original message:", hidden_message)
+#     print("Decoded message:", decoded_message)
+
+#     print("DONE")
+
