@@ -17,6 +17,7 @@ class StegoObject(models.Model):
 
 
 class StegoImage(models.Model):
+    file = models.FileField(upload_to='payloads/')
     original_image = models.ImageField(upload_to='images/input')
     message = models.TextField()
     stego_image = models.ImageField(upload_to='imgaes/input/withmsg', blank=True, null=True)

@@ -1,5 +1,5 @@
 from django import forms
-from .models import ImageUpload, Payload
+from .models import ImageUpload, Payload, StegoImage
 #this
 class ImageUploadForm(forms.ModelForm):
     class Meta:
@@ -14,13 +14,12 @@ class PayloadForm(forms.ModelForm):
 class LSBSelectionForm(forms.Form):
     num_lsbs = forms.IntegerField(min_value=0, max_value=7, label="Number of LSBs")
 
-from .models import StegoImage
-
 class StegoImageForm(forms.ModelForm):
+    file = forms.FileField()
     num_lsbs = forms.IntegerField(min_value=0, max_value=7, label="Number of LSBs")
     class Meta:
         model = StegoImage
-        fields = ['original_image', 'message','num_lsbs']
+        fields = ['original_image', 'message','num_lsbs', 'file']
 
 class StegoDecodeForm(forms.Form):
     stego_image = forms.ImageField(label="Stego Image")

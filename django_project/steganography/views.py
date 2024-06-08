@@ -1,14 +1,21 @@
-from django.shortcuts import render, redirect
-from .forms import ImageUploadForm, PayloadForm, LSBSelectionForm
+from django.shortcuts import render, redirect, get_object_or_404
+from .forms import ImageUploadForm, PayloadForm, LSBSelectionForm, StegoImageForm, StegoDecodeForm
+from .models import ImageUpload, Payload, StegoObject, StegoImage
 from .utils import modify_lsb
-from .models import ImageUpload, Payload, StegoObject
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.files.base import ContentFile
 from PIL import Image, UnidentifiedImageError
 import io
 import wave
 import numpy as np
-
 from django.conf import settings
+import cv2
+import numpy as np
+import math
+from os import path
+import os
+import fitz 
+from docx import Document
 
 
 #this
@@ -67,20 +74,6 @@ def stego_detail(request, pk):
     stego_object = StegoObject.objects.get(pk=pk)
     return render(request, 'steganography/stego_detail.html', {'stego_object': stego_object})
 
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.conf import settings
-from .forms import StegoImageForm
-from .models import StegoImage
-import cv2
-import numpy as np
-import math
-from os import path
-import os
-from django.core.files.uploadedfile import SimpleUploadedFile
-from .forms import StegoDecodeForm
-
-
 BITS = 6 #change this OG IS 2
 HIGH_BITS = 256 - (1 << BITS) #ima change this too
 LOW_BITS = (1 << BITS) - 1
@@ -112,6 +105,20 @@ def insert(img_path, msg, output_path):
     return output_path
     #return filename
 
+def read_pdf(file):
+    pdf_document = fitz.open(stream=file.read(), filetype="pdf")
+    text = ""
+    for page_num in range(len(pdf_document)):
+        page = pdf_document.load_page(page_num)
+        text += page.get_text()
+    return text
+
+def read_docx(file):
+    doc = Document(file)
+    text = ""
+    for paragraph in doc.paragraphs:
+        text += paragraph.text + "\n"
+    return text
 
 def embed(request):
     global BITS, HIGH_BITS, LOW_BITS, BYTES_PER_BYTE
@@ -122,6 +129,29 @@ def embed(request):
             stego_image.original_image = request.FILES['original_image']
             stego_image.save()
             original_image_path = stego_image.original_image.path
+
+        #     #message to now change to form
+        #     if request.method == 'POST':
+        #     form = (request.POST, request.FILES)
+        #     if form.is_valid():
+        #         uploaded_file = request.FILES['file']
+        #         file_name = uploaded_file.name
+        #         file_extension = file_name.split('.')[-1].lower()
+
+        #         if file_extension == 'pdf':
+        #             file_content = read_pdf(uploaded_file)
+        #         elif file_extension == 'docx':
+        #             file_content = read_docx(uploaded_file)
+        #         elif file_extension == 'txt':
+        #             file_content = uploaded_file.read().decode('utf-8')
+        #         else:
+        #             return HttpResponse("Unsupported file type")
+
+        #         return HttpResponse(f"File content: <pre>{file_content}</pre>")
+        # else:
+        #     form = UploadFileForm()
+        # return render(request, 'upload.html', {'form': form})
+
             message = stego_image.message
 
             #Store the entered number into the global variable BITS
