@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Steganography Result</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
@@ -8,15 +9,18 @@
             margin-top: 20px;
             padding: 20px;
         }
+
         .image-box {
             margin-bottom: 20px;
             text-align: center;
         }
+
         .image-box p {
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 10px;
         }
+
         .image-box img {
             max-width: 100%;
             height: auto;
@@ -24,22 +28,52 @@
             margin-bottom: 20px;
             border: 1px solid #ccc;
         }
+
         .buttons-container {
             margin-top: 50px;
             display: flex;
             justify-content: center;
         }
+
         .button {
             margin: 0 10px;
             font-size: 18px;
         }
+
         .button:hover {
             background-color: #3273dc;
             color: white;
         }
     </style>
 </head>
+
 <body>
+    <nav class="navbar is-link" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'home' %}">
+                Home
+            </a>
+
+            <a class="navbar-item" href="{% url 'embed' %}">
+                Encode Image
+            </a>
+
+            <a class="navbar-item" href="{% url 'decode_image' %}">
+                Decode Image
+            </a>
+
+            <a class="navbar-item" href="{% url 'embed_audio' %}">
+                Encode Audio
+            </a>
+
+            <a class="navbar-item" href="{% url 'decode_audio' %}">
+                Decode Audio
+            </a>
+            <a class="navbar-item" href="{% url 'encode_text' %}">
+                Encode Text File
+            </a>
+        </div>
+    </nav>
     <section class="section">
         <div class="container">
             <h1 class="title has-text-centered"><u>Steganography Result</u></h1>
@@ -51,14 +85,14 @@
                 <div class="column is-half image-box">
                     <p>Stego Image:</p>
                     <img src="{{ stego_image.stego_image.url }}" alt="Stego Image">
+                    <a href="{{ stego_image.stego_image.url }}" download class="button is-primary">
+                        Download Image
+                    </a>
                 </div>
             </div>
-            <div class="buttons-container">
-                <a href="{% url 'home' %}" style="margin-bottom: 30px; margin-left: 10px;" class="button is-primary">Home</a>
-                <a href="{% url 'embed' %}" class="button is-primary">Encode New Image</a>
-                <a href="{% url 'decode_image' %}" class="button is-link">Decode Image</a>
-            </div>
+
         </div>
     </section>
 </body>
+
 </html>

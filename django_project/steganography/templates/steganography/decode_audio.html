@@ -24,11 +24,34 @@
     </style>
 </head>
 <body>
-    <section class="section">
-        <div class="container">
-            <a href="{% url 'home' %}" style="margin-bottom: 30px; margin-left: 10px;" class="button is-primary">Home</a>
-            <a href="{% url 'embed_audio' %}" style="margin-bottom: 30px;" class="button is-link">Encode Audio</a>
+    <nav class="navbar is-link" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'home' %}">
+                Home
+            </a>
+
+            <a class="navbar-item" href="{% url 'embed' %}">
+                Encode Image
+            </a>
+
+            <a class="navbar-item" href="{% url 'decode_image' %}">
+                Decode Image
+            </a>
+
+            <a class="navbar-item" href="{% url 'embed_audio' %}">
+                Encode  Audio
+            </a>
+
+            <a class="navbar-item" href="{% url 'decode_audio' %}">
+                Decode  Audio
+            </a>
+            <a  class="navbar-item" href="{% url 'encode_text' %}">
+                Encode Text File
+            </a>
         </div>
+    </nav>
+    <section class="section">
+        
         <div class="container">
             <h2 class="title"><u>Decode Message from Audio</u></h2>
             

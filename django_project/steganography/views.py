@@ -14,17 +14,15 @@ from os import path
 from pathlib import Path  # Import Path class from pathlib
 import wave
 
-
-def home(request):
-    return render(request, 'steganography/home.html')
-
-
 BITS = 10000 #change this OG IS 2
 HIGH_BITS = 256 - (1 << BITS) #ima change this too
 LOW_BITS = (1 << BITS) - 1
 BYTES_PER_BYTE = math.ceil(8 / BITS)
 FLAG = '%'
 TEXTBOX_VALUE = ''
+
+def home(request):
+    return render(request, 'steganography/home.html')
 
 def encode(block, data):
     data = ord(data)

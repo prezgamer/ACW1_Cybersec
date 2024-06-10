@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Embed Message in Text File</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
@@ -11,12 +12,15 @@
             text-align: center;
             margin: 20px 0;
         }
+
         #drop-area.hover {
             border-color: #333;
         }
+
         .control input {
             width: 100%;
         }
+
         #file-preview {
             margin-top: 20px;
             white-space: pre-wrap;
@@ -41,7 +45,7 @@
             let file = files[0];
             let reader = new FileReader();
             reader.readAsText(file);
-            reader.onloadend = function() {
+            reader.onloadend = function () {
                 document.getElementById('file-preview').innerText = reader.result;
                 document.getElementById('fileElem').files = files;  // Set the file input's files property
             };
@@ -69,14 +73,39 @@
         });
     </script>
 </head>
+
 <body>
-    <section class="section">
-        <div class="container">
-            <a href="{% url 'home' %}" style="margin-bottom: 30px; margin-left: 10px;" class="button is-primary">Home</a>
+    <nav class="navbar is-link" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'home' %}">
+                Home
+            </a>
+
+            <a class="navbar-item" href="{% url 'embed' %}">
+                Encode Image
+            </a>
+
+            <a class="navbar-item" href="{% url 'decode_image' %}">
+                Decode Image
+            </a>
+
+            <a class="navbar-item" href="{% url 'embed_audio' %}">
+                Encode  Audio
+            </a>
+
+            <a class="navbar-item" href="{% url 'decode_audio' %}">
+                Decode  Audio
+            </a>
+            <a  class="navbar-item" href="{% url 'encode_text' %}">
+                Encode Text File
+            </a>
         </div>
+    </nav>
+    <section class="section">
+
         <div class="container">
             <h2 class="title"><u>Embed Message in Text File</u></h2>
-            
+
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.non_field_errors }}
@@ -114,4 +143,5 @@
         </div>
     </section>
 </body>
+
 </html>

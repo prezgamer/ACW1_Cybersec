@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Steganography Home</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
     <style>
         #drop-area {
@@ -11,29 +13,56 @@
             text-align: center;
             margin: 20px 0;
         }
+
         #drop-area.hover {
             border-color: #333;
         }
+
         #drop-area img {
             max-width: 100%;
             margin-top: 10px;
         }
-        .control input 
-        {
+
+        .control input {
             width: 100%;
         }
 
         .control textarea {
-        width: 100%;
-    }
+            width: 100%;
+        }
     </style>
 </head>
+
 <body>
-    <section class="section">
-        <div class="container">
-            <a href="{% url 'home' %}" style="margin-bottom: 30px; margin-left: 10px;" class="button is-primary">Home</a>
-            <a href="{% url 'decode_image' %}" style="margin-bottom:30px;" class="button is-link">Decode Image</a>
+
+    <nav class="navbar is-link" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'home' %}">
+                Home
+            </a>
+
+            <a class="navbar-item" href="{% url 'embed' %}">
+                Encode Image
+            </a>
+
+            <a class="navbar-item" href="{% url 'decode_image' %}">
+                Decode Image
+            </a>
+
+            <a class="navbar-item" href="{% url 'embed_audio' %}">
+                Encode  Audio
+            </a>
+
+            <a class="navbar-item" href="{% url 'decode_audio' %}">
+                Decode  Audio
+            </a>
+            <a  class="navbar-item" href="{% url 'encode_text' %}">
+                Encode Text File
+            </a>
         </div>
+    </nav>
+    <section class="section">
+
         <div class="container">
             <h1 class="title"><u>Embed a Secret Message in an Image</u></h1>
 
@@ -41,9 +70,16 @@
                 {% csrf_token %}
                 {{ form.non_field_errors }}
                 <div class="field">
-                    <label class="label">File</label>
-                    <div class="control">
-                        {{ form.message_file }}
+                    <div class="file">
+                        <label class="file-label">
+                            <input class="file-input" type="file" name="stego_image"> <span class="file-cta">
+                                <span class="file-icon">
+                                    <i class="fas fa-upload"></i> </span>
+                                <span class="file-label">
+                                    Choose a file
+                                </span>
+                            </span>
+                        </label>
                     </div>
                 </div>
                 <div class="field">
@@ -55,30 +91,31 @@
                 <div class="field">
                     <div class="field" style="display: flex; white-space: nowrap; ">
                         <label class="label">Number of LSBs: </label>
-                        <div class="control" style="padding-left: 10px; width: 100%;" >
-                        {{ form.num_lsbs }}
+                        <div class="control" style="padding-left: 10px; width: 100%;">
+                            {{ form.num_lsbs }}
+                        </div>
                     </div>
-                </div>
-                <div class="field">
-                    <div id="drop-area">
-                        <p>Drag and drop an image here or click to select one</p>
-                        <input type="file" id="fileElem" accept="image/*" style="display:none" name="original_image">
-                        <img id="preview" src="#" alt="Image preview" style="display:none;">
+                    <div class="field">
+                        <div id="drop-area">
+                            <p>Drag and drop an image here or click to select one</p>
+                            <input type="file" id="fileElem" accept="image/*" style="display:none"
+                                name="original_image">
+                            <img id="preview" src="#" alt="Image preview" style="display:none;">
+                        </div>
+                        {{ form.original_image.errors }}
                     </div>
-                    {{ form.original_image.errors }}
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <button type="submit" style="width: 100%;" class="button is-primary">Embed</button>
+                    <div class="field">
+                        <div class="control">
+                            <button type="submit" style="width: 100%;" class="button is-primary">Embed</button>
+                        </div>
                     </div>
-                </div>
-                
+
             </form>
-            
+
         </div>
     </section>
     <script>
-        (function() {
+        (function () {
             let dropArea = document.getElementById('drop-area');
             let fileInput = document.getElementById('fileElem');
             let preview = document.getElementById('preview');
@@ -116,7 +153,7 @@
                     let file = files[0];
                     let reader = new FileReader();
                     reader.readAsDataURL(file);
-                    reader.onloadend = function() {
+                    reader.onloadend = function () {
                         preview.src = reader.result;
                         preview.style.display = 'block';
                     };
@@ -126,4 +163,5 @@
         })();
     </script>
 </body>
+
 </html>

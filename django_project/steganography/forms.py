@@ -1,5 +1,5 @@
 from django import forms
-#this
+
 
 from .models import StegoImage, StegoAudio
 
@@ -8,10 +8,6 @@ class StegoImageForm(forms.ModelForm):
     class Meta:
         model = StegoImage
         fields = ['message_file','original_image', 'message','num_lsbs']
-
-# class StegoDecodeForm(forms.Form):
-#     stego_image = forms.ImageField(label="Stego Image")
-#     num_lsbs = forms.IntegerField(min_value=0, max_value=7, label="Number of LSBs")
     
 class StegoDecodeForm(forms.Form):
     stego_image = forms.ImageField()
