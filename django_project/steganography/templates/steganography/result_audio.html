@@ -1,0 +1,8 @@
+{% block content %}
+  <h2>Audio Steganography Result</h2>
+  <audio controls>
+    <source src="{{ stego_audio.stego_audio.url }}" type="audio/wav">
+    Your browser does not support the audio element.
+  </audio>
+  <p>Original Message: {{ stego_audio.message }}</p>
+{% endblock %}

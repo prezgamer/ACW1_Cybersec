@@ -1,15 +1,17 @@
 from django.core.files.storage import FileSystemStorage
+from pydub import AudioSegment
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
-from .forms import StegoImageForm
-from .models import StegoImage
+from .forms import StegoImageForm, StegoDecodeForm, StegoAudioForm, StegoAudioDecodeForm
+from .models import StegoImage, StegoAudio
 import cv2
 import numpy as np
 import math
-from os import path
 import os
-from django.core.files.uploadedfile import SimpleUploadedFile
-from .forms import StegoDecodeForm
+from os import path
+from pathlib import Path  # Import Path class from pathlib
+import wave
+
 
 def home(request):
     return render(request, 'steganography/home.html')
@@ -139,59 +141,136 @@ def decode_image(request):
     return render(request, 'steganography/decode_image.html', {'form': form})
 
 
-# def encode_audio(audio_file_path, hidden_message, output_file_path, lsb_count=1):
-#     with wave.open(audio_file_path, 'rb') as audio_file:
-#         params = audio_file.getparams()
-#         frames = audio_file.readframes(params.nframes)
-#         frame_bytes = bytearray(list(frames))
-        
-#         # Convert the hidden message to bits
-#         message_bits = ''.join([format(ord(char), '08b') for char in hidden_message])
-#         delimiter = '1' * lsb_count * 2  # Delimiter to indicate end of message
-#         message_bits += delimiter
-        
-#         data_index = 0
-#         for i in range(len(frame_bytes)):
-#             if data_index < len(message_bits):
-#                 bits_to_write = int(message_bits[data_index:data_index + lsb_count], 2)
-#                 frame_bytes[i] = (frame_bytes[i] & (255 << lsb_count)) | bits_to_write
-#                 data_index += lsb_count
-        
-#         with wave.open(output_file_path, 'wb') as dest_file:
-#             dest_file.setparams(params)
-#             dest_file.writeframes(bytes(frame_bytes))
-    
-#     return frames, frame_bytes
 
-# def decode_audio(audio_file_path, lsb_count=1):
-#     with wave.open(audio_file_path, 'rb') as audio_file:
-#         frames = audio_file.readframes(audio_file.getnframes())
-#         frame_bytes = bytearray(list(frames))
-        
-#         extracted_bits = ''.join([format(frame_bytes[i] & ((1 << lsb_count) - 1), f'0{lsb_count}b') for i in range(len(frame_bytes))])
-        
-#         # Find the delimiter to stop reading bits
-#         delimiter = '1' * lsb_count * 2
-#         end_index = extracted_bits.find(delimiter)
-#         if end_index != -1:
-#             extracted_bits = extracted_bits[:end_index]
-        
-#         message_bytes = [extracted_bits[i:i+8] for i in range(0, len(extracted_bits), 8)]
-#         message = ''.join([chr(int(byte, 2)) for byte in message_bytes if len(byte) == 8])
-        
-#         return message
+def encodeAudio(block, data, bits):
+    data = ord(data)
+    for idx in range(len(block)):
+        block[idx] &= HIGH_BITS
+        block[idx] |= (data >> (bits * idx)) & LOW_BITS
 
-# def testaudio():
-#     audio_file_path = "Sample.wav"
-#     hidden_message = "Hello, World!"
-#     output_file_path = "Encoded_Sample.wav"
-#     lsb_count = 8  # Number of LSBs to use for encoding
-    
-#     original_frames, encoded_frames = encode_audio(audio_file_path, hidden_message, output_file_path, lsb_count)
-#     decoded_message = decode_audio(output_file_path, lsb_count)
-    
-#     print("Original message:", hidden_message)
-#     print("Decoded message:", decoded_message)
 
-#     print("DONE")
+def convert_to_wav(file_path):
+    audio = AudioSegment.from_file(file_path)
+    wav_path = os.path.splitext(file_path)[0] + '.wav'
+    audio.export(wav_path, format='wav')
+    return wav_path  # Return the wav file path
 
+def insertAudio(audio_path: str, msg: str, bits: int = 1):
+    audio_path1 = Path(audio_path)  # Create a Path object
+    bytes_per_byte = math.ceil(8 / bits)
+    flag = "^" 
+    with wave.open(audio_path, mode="rb") as audio:
+        frame_bytes = list(audio.readframes(audio.getnframes()))
+    numpy_audio = np.array(frame_bytes)
+    ori_shape = numpy_audio.shape
+    max_bytes = len(frame_bytes) // bytes_per_byte
+    msg = "{}{}{}".format(len(msg), flag, msg)
+    if len(msg) > max_bytes:
+        raise BufferError("Message greater than capacity:{}".format(max_bytes))
+    data = np.reshape(numpy_audio, -1)
+    for idx, val in enumerate(msg):
+        encodeAudio(data[idx * bytes_per_byte: (idx + 1) * bytes_per_byte], val, bits)
+    frame_bytes = np.reshape(data, ori_shape).tolist()
+    filename = audio_path1.stem + "_modified" + audio_path1.suffix  # Modify the filename
+    output_path = audio_path1.parent / filename  # Ensure the output path is correct
+    if os.path.exists(output_path):
+        os.remove(output_path)
+    with wave.open(str(output_path), "wb") as newAudio:  # Convert to string
+        newAudio.setparams(audio.getparams())
+        newAudio.writeframes(bytes(frame_bytes))
+    return str(output_path)
+
+def extractAudio(audio_path: str, bits: int = 1):
+    bytes_per_byte = math.ceil(8 / bits)
+    flag = "^"
+    with wave.open(audio_path, mode="rb") as audio:
+        frame_bytes = list(audio.readframes(audio.getnframes()))
+    numpy_audio = np.array(frame_bytes)
+    data = np.reshape(numpy_audio, -1)
+    total = data.shape[0]
+    res = ""
+    idx = 0
+    while idx < total // bytes_per_byte:
+        ch = decodeAudio(data[idx * bytes_per_byte: (idx + 1) * bytes_per_byte], bits)
+        idx += 1
+        if ch == flag:
+            break
+        res += ch
+    try:
+        end = int(res) + idx
+    except ValueError:
+        raise ValueError("Input audio isn't correct.")
+    if end > total // bytes_per_byte:
+        raise ValueError("Input audio isn't correct.")
+    secret = ""
+    while idx < end:
+        secret += decodeAudio(data[idx * bytes_per_byte: (idx + 1) * bytes_per_byte], bits)
+        idx += 1
+    return secret
+
+def embed_audio(request):
+    if request.method == 'POST':
+        form = StegoAudioForm(request.POST, request.FILES)
+        if form.is_valid():
+            stego_audio = form.save(commit=False)
+            stego_audio.original_audio = request.FILES['original_audio']
+            stego_audio.save()
+            original_audio_path = stego_audio.original_audio.path
+
+            if original_audio_path.endswith('.mp3'):
+                original_audio_path = convert_to_wav(original_audio_path)
+
+            message = stego_audio.message
+            bits = form.cleaned_data['num_lsbs']
+            static_file_name = f"{stego_audio.pk}_stego_audio.wav"
+            output_path = os.path.join(settings.MEDIA_ROOT, "stego_audio", static_file_name)
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            if original_audio_path is not None:
+                try:
+                    stego_audio_path = insertAudio(original_audio_path, message, bits)
+                    stego_audio.stego_audio.name = os.path.join("stego_audio", static_file_name)
+                    stego_audio.save()
+                    return redirect('result_audio', pk=stego_audio.pk)
+                except Exception as e:
+                    form.add_error(None, f"Error embedding message in audio: {e}")
+            else:
+                form.add_error(None, "Error: Original audio path is None")
+    else:
+        form = StegoAudioForm()
+    return render(request, 'steganography/embed_audio.html', {'form': form})
+
+
+def result_audio(request, pk):
+    stego_audio = get_object_or_404(StegoAudio, pk=pk)
+    return render(request, 'steganography/result_audio.html', {'stego_audio': stego_audio})
+
+def decode_audio(request):
+    if request.method == 'POST':
+        form = StegoAudioDecodeForm(request.POST, request.FILES)
+        if form.is_valid():
+            stego_audio = request.FILES['stego_audio']
+            file_path = os.path.join(settings.MEDIA_ROOT, 'stego_audio', stego_audio.name)
+
+            with open(file_path, 'wb+') as destination:
+                for chunk in stego_audio.chunks():
+                    destination.write(chunk)
+
+            if file_path.endswith('.mp3'):
+                file_path = convert_to_wav(file_path)
+
+            bits = form.cleaned_data['num_lsbs']
+            try:
+                decoded_message = extractAudio(file_path, bits)
+                os.remove(file_path)  # Clean up the temporary file
+                return render(request, 'steganography/decode_audio_result.html', {'message': decoded_message})
+            except Exception as e:
+                form.add_error(None, f"Error decoding audio message: {e}")
+    else:
+        form = StegoAudioDecodeForm()
+    return render(request, 'steganography/decode_audio.html', {'form': form})
+
+def decodeAudio(block, bits):
+    val = 0
+    for idx in range(len(block)):
+        val |= (block[idx] & LOW_BITS) << (idx * bits)
+    return chr(val)
