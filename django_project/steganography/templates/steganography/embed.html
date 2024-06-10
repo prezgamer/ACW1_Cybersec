@@ -50,13 +50,13 @@
             </a>
 
             <a class="navbar-item" href="{% url 'embed_audio' %}">
-                Encode  Audio
+                Encode Audio
             </a>
 
             <a class="navbar-item" href="{% url 'decode_audio' %}">
-                Decode  Audio
+                Decode Audio
             </a>
-            <a  class="navbar-item" href="{% url 'encode_text' %}">
+            <a class="navbar-item" href="{% url 'encode_text' %}">
                 Encode Text File
             </a>
         </div>
@@ -70,13 +70,16 @@
                 {% csrf_token %}
                 {{ form.non_field_errors }}
                 <div class="field">
-                    <div class="file">
+                    <div class="file has-name">
                         <label class="file-label">
-                            <input class="file-input" type="file" name="stego_image"> <span class="file-cta">
+                            <input class="file-input" type="file" name="stego_image" id="stego_image"
+                                onchange="updateLabel()">
+                            <span class="file-cta">
                                 <span class="file-icon">
-                                    <i class="fas fa-upload"></i> </span>
-                                <span class="file-label">
-                                    Choose a file
+                                    <i class="fas fa-upload"></i>
+                                </span>
+                                <span class="file-label" id="file-label">
+                                    No file chosen
                                 </span>
                             </span>
                         </label>
@@ -115,6 +118,13 @@
         </div>
     </section>
     <script>
+        function updateLabel() {
+            var input = document.getElementById('stego_image');
+            var label = document.getElementById('file-label');
+            label.textContent = input.files.length > 0 ? input.files[0].name : 'No file chosen';
+        }
+
+
         (function () {
             let dropArea = document.getElementById('drop-area');
             let fileInput = document.getElementById('fileElem');
@@ -160,7 +170,8 @@
                     fileInput.files = files;  // Set the file input's files property
                 }
             }
-        })();
+        })
+            ();
     </script>
 </body>
 
