@@ -1,8 +1,43 @@
+{% extends "base.html" %}
+
 {% block content %}
   <h2>Decode Message from Audio</h2>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Submit</button>
+    <div class="drop-zone" id="drop-zone">
+        Drag and drop your encoded audio file here
+    </div>
+    <input type="file" id="file-input" name="stego_audio" style="display: none;" />
+    <button type="submit">Decode</button>
+    <br><br>
+    <label for="decoded-message">Decoded Message:</label>
+    <textarea id="decoded-message" rows="4" cols="50" readonly>{{ message }}</textarea>
   </form>
+  <script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('over');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('over');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('over');
+        const files = e.dataTransfer.files;
+        if (files.length) {
+            fileInput.files = files;
+        }
+    });
+
+    dropZone.addEventListener('click', () => {
+        fileInput.click();
+    });
+  </script>
 {% endblock %}

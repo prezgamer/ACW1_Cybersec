@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result Audio</title>
+</head>
+<body>
+    <h1>Audio Steganography Result</h1>
+    <p>Download your encoded audio file:</p>
+    <a href="{{ stego_audio.stego_audio.url }}" download>Download Encoded Audio</a>
+    <br><br>
+    <a href="{% url 'decode_audio' %}">Go to Decoder</a>
+</body>
+</html>

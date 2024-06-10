@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embed Audio</title>
+    <style>
+        .drop-zone {
+            width: 300px;
+            height: 200px;
+            border: 2px dashed #ccc;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            color: #ccc;
+            cursor: pointer;
+        }
+        .drop-zone.over {
+            border-color: #333;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Audio Steganography Encoder</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="drop-zone" id="drop-zone">
+            Drag and drop your audio file here
+        </div>
+        <input type="file" id="file-input" name="original_audio" style="display: none;" />
+        <button type="submit">Encode</button>
+    </form>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('over');
+            const files = e.dataTransfer.files;
+            if (files.length) {
+                fileInput.files = files;
+            }
+        });
+
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+    </script>
+</body>
+</html>
