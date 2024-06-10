@@ -18,7 +18,7 @@ class StegoAudioForm(forms.ModelForm):
     
     class Meta:
         model = StegoAudio
-        fields = ['original_audio', 'message', 'num_lsbs']
+        fields = ['message_file', 'original_audio', 'message', 'num_lsbs']
 
 class StegoAudioDecodeForm(forms.Form):
     stego_audio = forms.FileField(label='Stego Audio')

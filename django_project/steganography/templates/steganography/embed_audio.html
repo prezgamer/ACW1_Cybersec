@@ -22,6 +22,23 @@
             width: 100%;
         }
     </style>
+    <script>
+        function toggleMessageInput() {
+            const textMessageField = document.getElementById('text-message-field');
+            const fileMessageField = document.getElementById('file-message-field');
+            const toggleButton = document.getElementById('toggle-message-input');
+
+            if (textMessageField.style.display === 'none') {
+                textMessageField.style.display = 'block';
+                fileMessageField.style.display = 'none';
+                toggleButton.innerText = 'Switch to File Input';
+            } else {
+                textMessageField.style.display = 'none';
+                fileMessageField.style.display = 'block';
+                toggleButton.innerText = 'Switch to Text Input';
+            }
+        }
+    </script>
 </head>
 <body>
     <section class="section">
@@ -49,9 +66,18 @@
                     {{ form.original_audio.errors }}
                 </div>
                 <div class="field">
+                    <button type="button" id="toggle-message-input" class="button is-secondary" onclick="toggleMessageInput()">Switch to File Input</button>
+                </div>
+                <div class="field" id="text-message-field">
                     <label class="label">Message to Embed:</label>
                     <div class="control">
                         {{ form.message }}
+                    </div>
+                </div>
+                <div class="field" id="file-message-field" style="display: none;">
+                    <label class="label">Message File:</label>
+                    <div class="control">
+                        {{ form.message_file }}
                     </div>
                 </div>
                 <div class="field">

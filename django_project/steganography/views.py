@@ -58,6 +58,8 @@ def embed(request):
             stego_image.original_image = request.FILES['original_image']
             stego_image.save()
             original_image_path = stego_image.original_image.path
+
+            
             message = stego_image.message
             #Store the entered number into the global variable BITS
             BITS = form.cleaned_data['num_lsbs']
