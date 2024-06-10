@@ -12,4 +12,5 @@ urlpatterns = [
     path('embed_audio/', views.embed_audio, name='embed_audio'),
     path('result_audio/<int:pk>/', views.result_audio, name='result_audio'),
     path('decode_audio/', views.decode_audio, name='decode_audio'),
+    path('encode_text/', views.encode_text, name='encode_text'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

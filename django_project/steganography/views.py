@@ -1,8 +1,10 @@
 from django.core.files.storage import FileSystemStorage
 from pydub import AudioSegment
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from django.utils.encoding import smart_str
 from django.conf import settings
-from .forms import StegoImageForm, StegoDecodeForm, StegoAudioForm, StegoAudioDecodeForm
+from .forms import StegoImageForm, StegoDecodeForm, StegoAudioForm, StegoAudioDecodeForm, StegoTextForm
 from .models import StegoImage, StegoAudio
 import cv2
 import numpy as np
@@ -276,3 +278,60 @@ def decodeAudio(block, bits):
     for idx in range(len(block)):
         val |= (block[idx] & LOW_BITS) << (idx * bits)
     return chr(val)
+
+def encode_text_into_file(cover_file_path, text_payload, lsb_count):
+    with open(cover_file_path, 'r') as cover_file:
+        cover_text = cover_file.read()
+
+    binary_payload = ''.join(format(ord(char), '08b') for char in text_payload)
+    binary_payload += '11111111' * 2  
+
+    encoded_text = []
+    binary_index = 0
+    for char in cover_text:
+        if binary_index < len(binary_payload):
+            char_binary = format(ord(char), '08b')
+            char_binary = char_binary[:-lsb_count] + binary_payload[binary_index:binary_index + lsb_count]
+            encoded_text.append(chr(int(char_binary, 2)))
+            binary_index += lsb_count
+        else:
+            encoded_text.append(char)
+
+    encoded_text = ''.join(encoded_text)
+    encoded_file_path = os.path.join(os.path.dirname(cover_file_path), 'encoded_' + os.path.basename(cover_file_path))
+    with open(encoded_file_path, 'w') as encoded_file:
+        encoded_file.write(encoded_text)
+
+    return encoded_file_path
+
+def encode_text(request):
+    if request.method == 'POST':
+        form = StegoTextForm(request.POST, request.FILES)
+        if form.is_valid():
+            cover_file = form.cleaned_data['cover_file']
+            text_payload = form.cleaned_data['message']
+            lsb_count = form.cleaned_data['num_lsbs']
+            message_file = form.cleaned_data['message_file']
+
+            fs = FileSystemStorage()
+            filename = fs.save(cover_file.name, cover_file)
+            cover_file_path = fs.path(filename)
+
+            if message_file:
+                message_filename = fs.save(message_file.name, message_file)
+                message_file_path = fs.path(message_filename)
+                with open(message_file_path, 'r') as mf:
+                    text_payload = mf.read()
+
+            try:
+                encoded_file_path = encode_text_into_file(cover_file_path, text_payload, lsb_count)
+                response = HttpResponse(open(encoded_file_path, 'rb').read(), content_type='text/plain')
+                response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(encoded_file_path)
+                return response
+            except Exception as e:
+                message = f'Error during encoding: {e}'
+                return render(request, 'steganography/encode_text.html', {'form': form, 'message': message})
+    else:
+        form = StegoTextForm()
+
+    return render(request, 'steganography/encode_text.html', {'form': form})

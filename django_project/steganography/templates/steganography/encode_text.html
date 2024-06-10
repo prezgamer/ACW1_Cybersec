@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Embed Message in Text File</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+    <style>
+        #drop-area {
+            border: 2px dashed #009688;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        #drop-area.hover {
+            border-color: #333;
+        }
+        .control input {
+            width: 100%;
+        }
+        #file-preview {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+    </style>
+    <script>
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function handleDrop(e) {
+            let dt = e.dataTransfer;
+            let files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            let file = files[0];
+            let reader = new FileReader();
+            reader.readAsText(file);
+            reader.onloadend = function() {
+                document.getElementById('file-preview').innerText = reader.result;
+                document.getElementById('fileElem').files = files;  // Set the file input's files property
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            let dropArea = document.getElementById('drop-area');
+            let fileInput = document.getElementById('fileElem');
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => dropArea.classList.add('hover'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => dropArea.classList.remove('hover'), false);
+            });
+
+            dropArea.addEventListener('drop', handleDrop, false);
+            dropArea.addEventListener('click', () => fileInput.click(), false);
+            fileInput.addEventListener('change', (e) => handleFiles(e.target.files), false);
+        });
+    </script>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <a href="{% url 'home' %}" style="margin-bottom: 30px; margin-left: 10px;" class="button is-primary">Home</a>
+        </div>
+        <div class="container">
+            <h2 class="title"><u>Embed Message in Text File</u></h2>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="field" style="display: flex; white-space: nowrap;">
+                    <label class="label">Number of LSBs: </label>
+                    <div class="control" style="padding-left: 10px; width: 100%;">
+                        {{ form.num_lsbs }}
+                    </div>
+                </div>
+                <div class="field">
+                    <div id="drop-area">
+                        <p>Drag and drop a text file here or click to select one</p>
+                        <input type="file" id="fileElem" accept=".txt" style="display:none" name="cover_file">
+                    </div>
+                    {{ form.cover_file.errors }}
+                </div>
+                <div id="file-preview"></div>
+                <div class="field" id="text-message-field">
+                    <label class="label">Message to Embed:</label>
+                    <div class="control">
+                        {{ form.message }}
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <button type="submit" class="button is-primary" style="width: 100%;">Submit</button>
+                    </div>
+                </div>
+                {% if message %}
+                <div class="notification is-primary">
+                    {{ message }}
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </section>
+</body>
+</html>

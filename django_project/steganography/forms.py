@@ -23,3 +23,9 @@ class StegoAudioForm(forms.ModelForm):
 class StegoAudioDecodeForm(forms.Form):
     stego_audio = forms.FileField(label='Stego Audio')
     num_lsbs = forms.IntegerField(label='Number of LSBs', min_value=0, max_value=7)
+
+class StegoTextForm(forms.Form):
+    cover_file = forms.FileField(label="Select Cover File")
+    message = forms.CharField(widget=forms.Textarea, label="Message to Embed")
+    num_lsbs = forms.IntegerField(min_value=0, max_value=7, label="Number of LSBs")
+    message_file = forms.FileField(label="Message File", required=False)
