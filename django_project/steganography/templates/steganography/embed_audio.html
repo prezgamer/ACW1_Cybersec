@@ -1,8 +1,114 @@
-{% block content %}
-  <h2>Embed Message in Audio</h2>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit</button>
-  </form>
-{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Embed Message in Audio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+    <style>
+        #drop-area {
+            border: 2px dashed #009688;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        #drop-area.hover {
+            border-color: #333;
+        }
+        #drop-area img {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+        .control input {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <a href="{% url 'decode_audio' %}" style="margin-bottom: 30px;" class="button is-link">Decode Audio</a>
+        </div>
+        <div class="container">
+            <h2 class="title"><u>Embed Message in Audio</u></h2>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="field" style="display: flex; white-space: nowrap;">
+                    <label class="label">Number of LSBs: </label>
+                    <div class="control" style="padding-left: 10px; width: 100%;">
+                        {{ form.num_lsbs }}
+                    </div>
+                </div>
+                <div class="field">
+                    <div id="drop-area">
+                        <p>Drag and drop an audio file here or click to select one</p>
+                        <input type="file" id="fileElem" accept="audio/*" style="display:none" name="original_audio">
+                        <img id="preview" src="#" alt="Audio preview" style="display:none;">
+                    </div>
+                    {{ form.original_audio.errors }}
+                </div>
+                <div class="field">
+                    <label class="label">Message to Embed:</label>
+                    <div class="control">
+                        {{ form.message }}
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <button type="submit" class="button is-primary" style="width: 100%;">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+    <script>
+        (function() {
+            let dropArea = document.getElementById('drop-area');
+            let fileInput = document.getElementById('fileElem');
+            let preview = document.getElementById('preview');
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => dropArea.classList.add('hover'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => dropArea.classList.remove('hover'), false);
+            });
+
+            dropArea.addEventListener('drop', handleDrop, false);
+            dropArea.addEventListener('click', () => fileInput.click(), false);
+            fileInput.addEventListener('change', handleFiles, false);
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            function handleDrop(e) {
+                let dt = e.dataTransfer;
+                let files = dt.files;
+                handleFiles({ target: { files } });
+            }
+
+            function handleFiles(e) {
+                let files = e.target.files;
+                if (files.length > 0) {
+                    let file = files[0];
+                    let reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onloadend = function() {
+                        preview.src = reader.result;
+                        preview.style.display = 'block';
+                    };
+                    fileInput.files = files;  // Set the file input's files property
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
