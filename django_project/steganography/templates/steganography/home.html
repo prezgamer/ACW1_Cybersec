@@ -7,10 +7,19 @@
 <body>
     <section class="section">
         <div class="container">
-            <h1 class="title">Steganography Encoder/Decoder</h1>
+            <h1 class="title">Steganography Image Encoder/Decoder</h1>
             <div class="buttons">
                 <a href="{% url 'embed' %}" class="button is-primary">Encode Image</a>
                 <a href="{% url 'decode_image' %}" class="button is-link">Decode Image</a>
+            </div>
+        </div>
+    </section>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Steganography Audio Encoder/Decoder</h1>
+            <div class="buttons">
+                <a href="{% url 'embed_audio' %}" class="button is-primary">Encode Audio</a>
+                <a href="{% url 'decode_audio' %}" class="button is-link">Decode Audio</a>
             </div>
         </div>
     </section>

@@ -17,7 +17,7 @@ def home(request):
     return render(request, 'steganography/home.html')
 
 
-BITS = 6 #change this OG IS 2
+BITS = 10000 #change this OG IS 2
 HIGH_BITS = 256 - (1 << BITS) #ima change this too
 LOW_BITS = (1 << BITS) - 1
 BYTES_PER_BYTE = math.ceil(8 / BITS)
