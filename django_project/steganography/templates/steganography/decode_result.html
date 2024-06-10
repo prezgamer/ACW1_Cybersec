@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Decoded Message</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
@@ -9,37 +10,45 @@
             padding: 20px;
             text-align: center;
         }
+
         .message-box {
             margin-bottom: 20px;
             text-align: center;
         }
+
         .message-box p {
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 10px;
         }
+
         .message-box .notification {
             white-space: pre-wrap;
             word-wrap: break-word;
         }
+
         .buttons-container {
             margin-top: 30px;
             display: flex;
             justify-content: center;
         }
+
         .button {
             margin: 0 10px;
             font-size: 18px;
         }
+
         .button:hover {
             background-color: #3273dc;
             color: white;
         }
+
         h1.title {
             margin-bottom: 30px;
         }
     </style>
 </head>
+
 <body>
     <section class="section">
         <div class="container">
@@ -48,6 +57,11 @@
                 <div class="message-box">
                     <p>Message Text:</p>
                     <div class="notification is-primary">{{ message }}</div>
+
+                    <!-- {% if file_contents %}
+                    <h1>File Contents</h1>
+                    <pre>{{ file_contents }}</pre>
+                    {% endif %} -->
                 </div>
             </div>
             <div class="buttons-container">
@@ -57,4 +71,5 @@
         </div>
     </section>
 </body>
+
 </html>
