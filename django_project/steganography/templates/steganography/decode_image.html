@@ -49,10 +49,28 @@
                 {% csrf_token %}
                 {{ form.non_field_errors }}
                 
-                <div class="field", id="file-message-field">
-                    <label class="label">Message File</label>
-                    <div class="control">
-                        {{ form.reader_file }}
+                
+                <div class="field">
+                    <div class="field" id="file-message-field">
+                        <label class="label">Message File</label>
+                        <div class="control">
+                            <div class="file has-name is-boxed">
+                                <label class="file-label">
+                                    <input class="file-input" type="file" name="reader_file" id="reader_file_input">
+                                    <span class="file-cta">
+                                        <span class="icon">
+                                            <i class="fas fa-upload"></i>
+                                        </span>
+                                        <span class="file-label">
+                                            Choose a file…
+                                        </span>
+                                    </span>
+                                    <span class="file-name">
+                                        No file uploaded
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -152,6 +170,11 @@
                 operationModeInput.value = 'success';
                 fileMessageField.style.display = 'none';
                 toggleButton.innerText = 'Switch to File';
+                
+                const fileInput = document.querySelector('#file-message-field input');
+                fileInput.value = '';
+                const fileName = document.querySelector('.file-name');
+                fileName.textContent = 'No file uploaded';
             } else {
                 operationModeInput.value = 'file';
                 fileMessageField.style.display = 'block';
@@ -159,6 +182,11 @@
                 document.querySelector('#file-message-field input').value = '';
             }
         }
+
+        document.getElementById('reader_file_input').addEventListener('change', function () {
+            const fileName = document.querySelector('.file-name');
+            fileName.textContent = this.files.length > 0 ? this.files[0].name : 'No file uploaded';
+        });
     </script>
 </body>
 

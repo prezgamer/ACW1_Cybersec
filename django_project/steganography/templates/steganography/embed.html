@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Steganography Home</title>
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
     <style>
@@ -30,25 +31,6 @@
             width: 100%;
         }
     </style>
-    <script>
-        function toggleMessageInput() {
-            const textMessageField = document.getElementById('text-message-field');
-            const fileMessageField = document.getElementById('file-message-field');
-            const toggleButton = document.getElementById('toggle-message-input');
-
-            if (textMessageField.style.display === 'none') {
-                textMessageField.style.display = 'block';
-                fileMessageField.style.display = 'none';
-                toggleButton.innerText = 'Switch to File Input';
-                document.querySelector('#file-message-field input').value = '';
-            } else {
-                textMessageField.style.display = 'none';
-                fileMessageField.style.display = 'block';
-                toggleButton.innerText = 'Switch to Text Input';
-                document.querySelector('#text-message-field textarea').value = '';
-            }
-        }
-    </script>
 </head>
 <body>
     <nav class="navbar is-link" role="navigation" aria-label="main navigation">
@@ -79,9 +61,24 @@
                 <div class="field" id="file-message-field" style="display: none;">
                     <label class="label">Message File</label>
                     <div class="control">
-                        {{ form.message_file }}
+                      <div class="file has-name is-boxed">
+                        <label class="file-label">
+                          <input class="file-input" type="file" name="message_file" id="message_file_input">
+                          <span class="file-cta">
+                            <span class="icon">
+                              <i class="fas fa-upload"></i>
+                            </span>
+                            <span class="file-label">
+                              Choose a file…
+                            </span>
+                          </span>
+                          <span class="file-name">
+                            No file uploaded
+                          </span>
+                        </label>
+                      </div>
                     </div>
-                </div>
+                  </div>
                 <div class="field">
                     <div class="field" style="display: flex; white-space: nowrap;">
                         <label class="label">Number of LSBs: </label>
@@ -160,6 +157,37 @@
                 }
             }
         })();
+
+        function toggleMessageInput() {
+          const textMessageField = document.getElementById('text-message-field');
+          const fileMessageField = document.getElementById('file-message-field');
+          const toggleButton = document.getElementById('toggle-message-input');
+    
+          if (textMessageField.style.display === 'none') {
+            textMessageField.style.display = 'block';
+            fileMessageField.style.display = 'none';
+            toggleButton.innerText = 'Switch to File Input';
+            
+            // Clear the file input
+            const fileInput = document.querySelector('#file-message-field input');
+            fileInput.value = '';
+            const fileName = document.querySelector('.file-name');
+            fileName.textContent = 'No file uploaded';
+          } else {
+            textMessageField.style.display = 'none';
+            fileMessageField.style.display = 'block';
+            toggleButton.innerText = 'Switch to Text Input';
+            
+            // Clear the textarea
+            const textarea = document.querySelector('#text-message-field textarea');
+            textarea.value = '';
+          }
+        }
+    
+        document.getElementById('message_file_input').addEventListener('change', function() {
+          const fileName = document.querySelector('.file-name');
+          fileName.textContent = this.files.length > 0 ? this.files[0].name : 'No file uploaded';
+        });
     </script>
 </body>
 </html>

@@ -65,7 +65,7 @@
                 {% csrf_token %}
                 {{ form.non_field_errors }}
                 
-                <div class="field">
+                <div class="field" id="file-message-field">
                     <label class="label">Message File</label>
                     <div class="control">
                         {{ form.message_file }}
@@ -86,6 +86,15 @@
                     </div>
                     {{ form.stego_audio.errors }}
                 </div>
+
+                <div class="field">
+                    <label class="label">Operation Mode</label>
+                    <div class="control">
+                        <button type="button" class="button is-info" id="toggle-button" onclick="toggleOperationMode()">Switch to Success Page</button>
+                        <input type="hidden" id="operation-mode" name="operation_mode" value="file">
+                    </div>
+                </div>
+
                 <div class="field">
                     <div class="control">
                         <button type="submit" class="button is-primary" style="width: 100%;">Decode</button>
@@ -147,6 +156,23 @@
                 }
             }
         })();
+
+        function toggleOperationMode() {
+            let operationModeInput = document.getElementById('operation-mode');
+            let toggleButton = document.getElementById('toggle-button');
+            const fileMessageField = document.getElementById('file-message-field');
+            
+            if (operationModeInput.value === 'file') {
+                operationModeInput.value = 'success';
+                fileMessageField.style.display = 'none';
+                toggleButton.innerText = 'Switch to File';
+            } else {
+                operationModeInput.value = 'file';
+                fileMessageField.style.display = 'block';
+                toggleButton.innerText = 'Switch to Success Page';
+                document.querySelector('#file-message-field input').value = '';
+            }
+        }
     </script>
 </body>
 
