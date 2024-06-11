@@ -116,6 +116,7 @@
                     </div>
                 </div>
                 <div class="field">
+                    <label class="label">Text File:</label>
                     <div id="drop-area">
                         <p>Drag and drop a text file here or click to select one</p>
                         <input type="file" id="fileElem" accept=".txt" style="display:none" name="cover_file">
@@ -131,10 +132,11 @@
                 </div>
                 <div class="field">
                     <div class="control">
-                        <button type="submit" class="button is-primary" style="width: 100%;">Submit</button>
+                        <button type="submit" class="button is-primary" style="width: 100%;">Submit and download</button>
                     </div>
                 </div>
                 {% if message %}
+                <label class="label">Message from Text File:</label>
                 <div class="notification is-primary">
                     {{ message }}
                 </div>

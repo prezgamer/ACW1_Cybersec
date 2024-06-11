@@ -82,6 +82,7 @@
                 </div>
                 
                 <div class="field">
+                    <label class="label">Encoded Image:</label>
                     <div id="drop-area">
                         <p>Drag and drop an image here or click to select one</p>
                         <input type="file" id="fileElem" accept="image/*" style="display:none" name="stego_image">
@@ -91,9 +92,9 @@
                 </div>
 
                 <div class="field">
-                    <label class="label">Operation Mode</label>
+                    <label class="label">Choose how do you want to download/read:</label>
                     <div class="control">
-                        <button type="button" class="button is-info" id="toggle-button" onclick="toggleOperationMode()">Switch to Success Page</button>
+                        <button type="button" class="button is-info" id="toggle-button" onclick="toggleOperationMode()">Switch to Read Only</button>
                         <input type="hidden" id="operation-mode" name="operation_mode" value="file">
                     </div>
                 </div>
@@ -169,7 +170,7 @@
             if (operationModeInput.value === 'file') {
                 operationModeInput.value = 'success';
                 fileMessageField.style.display = 'none';
-                toggleButton.innerText = 'Switch to File';
+                toggleButton.innerText = 'Switch to Download & Read';
                 
                 const fileInput = document.querySelector('#file-message-field input');
                 fileInput.value = '';
@@ -178,7 +179,7 @@
             } else {
                 operationModeInput.value = 'file';
                 fileMessageField.style.display = 'block';
-                toggleButton.innerText = 'Switch to Success Page';
+                toggleButton.innerText = 'Switch to Read Only';
                 document.querySelector('#file-message-field input').value = '';
             }
         }
