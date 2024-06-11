@@ -48,13 +48,13 @@ def insert(img_path, msg, output_path):
     return output_path
     #return filename
 
-def decode_file(file):
+def decode_file(message_file):
     try:
-        file_content = file.read()
-        decoded_content = file_content.decode('utf-8')
-        return decoded_content
+        # Assuming message_file is a text file
+        message_content = message_file.read().decode('utf-8')
+        return message_content
     except Exception as e:
-        print(f"Error decoding file: {e}")
+        print(f"Failed to decode message file: {e}")
         return None
 
 def embed(request):
@@ -64,57 +64,45 @@ def embed(request):
         print("Request method is POST")
         if form.is_valid():
             print("Form is valid")
-            # original_image = form.cleaned_data['original_image']
-            # num_lsbs = form.cleaned_data['num_lsbs']
-            # message_file = form.cleaned_data['message_file']
 
-            # fs = FileSystemStorage()
-            # filename = fs.save(message_file.name, message_file)
-            # message_file_path = fs.path(filename)
-
-            # if message_file:
-            #     message_filename = fs.save(message_file.name, message_file)
-            #     message_file_path = fs.path(message_filename)
-
-            if request.FILES.get('message_file'):
+            if 'message_file' in request.FILES:
                 print("Message file is provided")
                 message_file = request.FILES['message_file']
-                message = decode_file(message_file)
-                if message is None:
-                    form.add_error('message_file', 'Failed to decode the message file.')
+                message = message_file.read().decode('utf-8')  # Read and decode the file content
+                if not message:
+                    form.add_error('message_file', 'Failed to read the message file.')
                     return render(request, 'steganography/embed.html', {'form': form})
                 print(f"Message read from file: {message}")
-            else:
-                message = form.cleaned_data['message']
-                print(f"Message read from text area: {message}")
 
-            stego_image = form.save(commit=False)
-            stego_image.original_image = request.FILES['original_image']
-            stego_image.save()
-            original_image_path = stego_image.original_image.path
-            print(f"Original image path: {original_image_path}")
-
-            BITS = form.cleaned_data['num_lsbs']
-            HIGH_BITS = 256 - (1 << BITS)
-            LOW_BITS = (1 << BITS) - 1
-            BYTES_PER_BYTE = math.ceil(8 / BITS)
-            print(f"BITS: {BITS}, HIGH_BITS: {HIGH_BITS}, LOW_BITS: {LOW_BITS}, BYTES_PER_BYTE: {BYTES_PER_BYTE}")
-
-            static_file_name = f"{stego_image.pk}_stego_image.png"
-            output_path = os.path.join(settings.MEDIA_ROOT, "stego_images", static_file_name)
-            print(f"Output path: {output_path}")
-
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
-
-            try:
-                stego_image_path = insert(original_image_path, message, output_path)
-                stego_image.stego_image.name = os.path.join("stego_images", static_file_name)
+                stego_image = form.save(commit=False)
+                stego_image.original_image = request.FILES['original_image']
                 stego_image.save()
-                print(f"Stego image saved: {stego_image.stego_image.name}")
-                return redirect('result', pk=stego_image.pk)
-            except Exception as e:
-                print(f"Error embedding message: {e}")
-                form.add_error(None, f"Error embedding message: {e}")
+                original_image_path = stego_image.original_image.path
+                print(f"Original image path: {original_image_path}")
+
+                BITS = form.cleaned_data['num_lsbs']
+                HIGH_BITS = 256 - (1 << BITS)
+                LOW_BITS = (1 << BITS) - 1
+                BYTES_PER_BYTE = math.ceil(8 / BITS)
+                print(f"BITS: {BITS}, HIGH_BITS: {HIGH_BITS}, LOW_BITS: {LOW_BITS}, BYTES_PER_BYTE: {BYTES_PER_BYTE}")
+
+                static_file_name = f"{stego_image.pk}_stego_image.png"
+                output_path = os.path.join(settings.MEDIA_ROOT, "stego_images", static_file_name)
+                print(f"Output path: {output_path}")
+
+                os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+                try:
+                    stego_image_path = insert(original_image_path, message, output_path)
+                    stego_image.stego_image.name = os.path.join("stego_images", static_file_name)
+                    stego_image.save()
+                    print(f"Stego image saved: {stego_image.stego_image.name}")
+                    return redirect('result', pk=stego_image.pk)
+                except Exception as e:
+                    print(f"Error embedding message: {e}")
+                    form.add_error(None, f"Error embedding message: {e}")
+            else:
+                form.add_error('message_file', 'No message file provided.')
         else:
             print(f"Form errors: {form.errors}")
     else:
@@ -125,6 +113,7 @@ def embed(request):
 def result(request, pk):
     stego_image = get_object_or_404(StegoImage, pk=pk)
     return render(request, 'steganography/result.html', {'stego_image': stego_image})
+
 #DECODING
 def decode(block):
     val = 0

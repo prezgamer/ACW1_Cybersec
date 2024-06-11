@@ -3,7 +3,7 @@ from django.db import models
 class StegoImage(models.Model):
     message_file = models.FileField(upload_to='stego_messages', null=True, blank=True)
     original_image = models.ImageField(upload_to='stego_images/original')
-    message = models.TextField()
+    # message = models.TextField()
     stego_image = models.ImageField(upload_to='stego_images/', null=True, blank=True)
 
 
