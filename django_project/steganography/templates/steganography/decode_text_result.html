@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Decoded Message</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+    <style>
+        .decoded-message {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="section">
+        <div class="container">
+            <h2 class="title"><u>Decoded Message</u></h2>
+            <div class="notification is-primary decoded-message">
+                <p>{{ message|safe }}</p>
+            </div>
+            <a href="{% url 'home' %}" class="button is-link">Home</a>
+        </div>
+    </section>
+</body>
+
+</html>

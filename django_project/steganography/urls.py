@@ -1,7 +1,6 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-
 from . import views
 
 urlpatterns = [
@@ -19,4 +18,5 @@ urlpatterns = [
     path('decode/', views.decode_image, name='decode_image'),
     path('decode_image_results/', views.decode_image_results, name='decode_image_results'),
     path('decode_audio/', views.decode_audio, name='decode_audio'),
+    path('decode_text/', views.decode_text, name='decode_text'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

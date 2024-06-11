@@ -39,3 +39,9 @@ class StegoTextForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea, label="Message to Embed")
     num_lsbs = forms.IntegerField(min_value=0, max_value=7, label="Number of LSBs")
     message_file = forms.FileField(label="Message File", required=False)
+
+
+class DecodeTextForm(forms.Form):
+    stego_file = forms.FileField(label="Select Stego Text File")
+    num_lsbs = forms.IntegerField(min_value=0, max_value=7, label="Number of LSBs")
+    

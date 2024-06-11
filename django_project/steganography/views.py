@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.conf import settings
-from .forms import StegoImageForm, StegoImageDecodeForm, StegoAudioForm, StegoAudioDecodeForm, StegoTextForm
+from .forms import StegoImageForm, StegoImageDecodeForm, StegoAudioForm, StegoAudioDecodeForm, StegoTextForm, DecodeTextForm
 from .models import StegoImage, StegoAudio, StegoDecodeAudio, StegoDecodeImage
 import cv2
 import numpy as np
@@ -365,23 +365,23 @@ def decodeAudio(block, bits):
         val |= (block[idx] & LOW_BITS) << (idx * bits)
     return chr(val)
 
+
+# Encoding Text File Function
 def encode_text_into_file(cover_file_path, text_payload, lsb_count):
     with open(cover_file_path, 'r') as cover_file:
         cover_text = cover_file.read()
 
     binary_payload = ''.join(format(ord(char), '08b') for char in text_payload)
-    binary_payload += '11111111' * 2  
+    binary_payload += '11111111' * 2  # Delimiter to mark the end of the payload
 
     encoded_text = []
     binary_index = 0
     for char in cover_text:
+        char_binary = format(ord(char), '08b')
         if binary_index < len(binary_payload):
-            char_binary = format(ord(char), '08b')
             char_binary = char_binary[:-lsb_count] + binary_payload[binary_index:binary_index + lsb_count]
-            encoded_text.append(chr(int(char_binary, 2)))
             binary_index += lsb_count
-        else:
-            encoded_text.append(char)
+        encoded_text.append(chr(int(char_binary, 2)))
 
     encoded_text = ''.join(encoded_text)
     encoded_file_path = os.path.join(os.path.dirname(cover_file_path), 'encoded_' + os.path.basename(cover_file_path))
@@ -390,6 +390,27 @@ def encode_text_into_file(cover_file_path, text_payload, lsb_count):
 
     return encoded_file_path
 
+# Decoding Text File Function
+def decode_text_from_file(stego_file_path, lsb_count):
+    with open(stego_file_path, 'r') as stego_file:
+        stego_text = stego_file.read()
+
+    binary_message = ''
+    for char in stego_text:
+        char_binary = format(ord(char), '08b')
+        binary_message += char_binary[-lsb_count:]
+
+    delimiter = '1111111111111110' 
+    parts = binary_message.split(delimiter)
+    message_bits = parts[0] if parts else binary_message
+
+    message_bits = message_bits[:len(message_bits) // 8 * 8]
+
+    message = ''.join(chr(int(message_bits[i:i+8], 2)) for i in range(0, len(message_bits), 8))
+
+    return message
+
+# Encode Text File View
 def encode_text(request):
     if request.method == 'POST':
         form = StegoTextForm(request.POST, request.FILES)
@@ -421,3 +442,27 @@ def encode_text(request):
         form = StegoTextForm()
 
     return render(request, 'steganography/encode_text.html', {'form': form})
+
+# Decode Text File View
+def decode_text(request):
+    if request.method == 'POST':
+        form = DecodeTextForm(request.POST, request.FILES)
+        if form.is_valid():
+            stego_file = form.cleaned_data['stego_file']
+            lsb_count = form.cleaned_data['num_lsbs']
+
+            fs = FileSystemStorage()
+            filename = fs.save(stego_file.name, stego_file)
+            stego_file_path = fs.path(filename)
+
+            try:
+                decoded_message = decode_text_from_file(stego_file_path, lsb_count)
+                os.remove(stego_file_path)  # Clean up the temporary file
+                return render(request, 'steganography/decode_text_result.html', {'message': decoded_message})
+            except Exception as e:
+                message = f'Error during decoding: {e}'
+                return render(request, 'steganography/decode_text.html', {'form': form, 'message': message})
+    else:
+        form = DecodeTextForm()
+
+    return render(request, 'steganography/decode_text.html', {'form': form})
