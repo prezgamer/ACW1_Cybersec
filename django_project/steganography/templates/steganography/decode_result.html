@@ -57,6 +57,9 @@
                 <div class="message-box">
                     <p>Message Text:</p>
                     <div class="notification is-primary">{{ message }}</div>
+                    {% if download_url %}
+                    <a href="{{ download_url }}" download>Download Modified File</a>
+                    {% endif %}
 
                     <!-- {% if file_contents %}
                     <h1>File Contents</h1>

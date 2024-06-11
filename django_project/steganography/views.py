@@ -162,17 +162,17 @@ def decode_image(request):
         if form.is_valid():
             stego_image = request.FILES['stego_image']
             file_path = os.path.join(settings.MEDIA_ROOT, 'stego_images', stego_image.name)
-            
+
             # Store the entered number into the global variable BITS
             BITS = form.cleaned_data['num_lsbs']
             HIGH_BITS = 256 - (1 << BITS)
             LOW_BITS = (1 << BITS) - 1
             BYTES_PER_BYTE = math.ceil(8 / BITS)
-            
+
             with open(file_path, 'wb+') as destination:
                 for chunk in stego_image.chunks():
                     destination.write(chunk)
-            
+
             try:
                 decoded_message = extract(file_path)
                 os.remove(file_path)  # Clean up the temporary file
@@ -183,30 +183,55 @@ def decode_image(request):
                 operation_mode = request.POST.get('operation_mode', 'file')
 
                 if operation_mode == 'file':
-                    # Handle file upload
-                    if 'text_file' in request.FILES:
-                        text_file = request.FILES['text_file']
+                    if 'reader_file' in request.FILES:
+                        text_file = request.FILES['reader_file']
+                        message = decoded_message  # Assuming you want to write the decoded message to the file
+
+                        print(f"File {text_file.name} received for overwriting")
+
                         file_storage = FileSystemStorage()
                         filename = file_storage.save(text_file.name, text_file)
-                        uploaded_file_url = file_storage.url(filename)
+                        uploaded_file_path = file_storage.path(filename)
+                        print(f"File uploaded to {uploaded_file_path}")
 
-                        # Read the contents of the text file
-                        with open(file_storage.path(filename), 'r') as file:
-                            file_contents = file.read()
+                        # Overwrite the file contents with the provided message
+                        try:
+                            with open(uploaded_file_path, 'w', encoding='utf-8') as file:
+                                file.write(message)
+                                print("File contents overwritten with the message")
+                        except Exception as e:
+                            form.add_error('reader_file', f"Error writing to the file: {e}")
+                            print(f"Error writing to the file: {e}")
+                            return render(request, 'steganography/decode_image.html', {'form': form})
+
+                        # Proceed with the rest of the process
+                        # Read the new contents of the text file
+                        try:
+                            with open(uploaded_file_path, 'r', encoding='utf-8') as file:
+                                file_contents = file.read()
+                                print("File read successfully")
+                        except Exception as e:
+                            form.add_error('reader_file', f"Error reading the file: {e}")
+                            print(f"Error reading the file: {e}")
+                            return render(request, 'steganography/decode_image.html', {'form': form})
 
                         # Render the decode_result template with the message and file contents
                         return render(request, 'steganography/decode_result.html', {
-                            'message': decoded_message,
+                            'message': message,  # Replace with actual decoded message if applicable
                             'file_contents': file_contents,
+                            'download_url': file_storage.url(filename),  # Provide download URL
                         })
-
-                    # If no file is uploaded, return an error message
-                    form.add_error(None, "No file was uploaded.")
+                    else:
+                        form.add_error(None, "No file was uploaded.")
+                        print("File not uploaded")
                 else:
                     # Redirect to the decode_image_results view if no file is uploaded
                     return redirect('decode_image_results')
             except Exception as e:
                 form.add_error(None, f"Error decoding message: {e}")
+                print(f"Error decoding message: {e}")
+        else:
+            print(f"Form errors: {form.errors}")
     else:
         form = StegoImageDecodeForm()
     return render(request, 'steganography/decode_image.html', {'form': form})

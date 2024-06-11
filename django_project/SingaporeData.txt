@@ -1,8 +1,0 @@
-Singapore Data:
-Population: 5918617
-GDP: 365000.0
-GDP Per Capita: 60000.0
-Singapore Data:
-Population: 5918617
-GDP: 365000.0
-GDP Per Capita: 60000.0
