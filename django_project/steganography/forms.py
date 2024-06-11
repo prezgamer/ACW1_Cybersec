@@ -1,7 +1,5 @@
 from django import forms
-
-
-from .models import StegoImage, StegoAudio
+from .models import StegoImage, StegoAudio, StegoDecodeImage, StegoDecodeAudio
 
 class StegoImageForm(forms.ModelForm):
     num_lsbs = forms.IntegerField(min_value=0, max_value=7, label="Number of LSBs")
@@ -9,9 +7,14 @@ class StegoImageForm(forms.ModelForm):
         model = StegoImage
         fields = ['message_file','original_image', 'message','num_lsbs']
     
-class StegoDecodeForm(forms.Form):
+
+class StegoImageDecodeForm(forms.ModelForm):
     stego_image = forms.ImageField()
     num_lsbs = forms.IntegerField(min_value=0, max_value=7, label="Number of LSBs")
+
+    class Meta:
+        model = StegoDecodeImage
+        fields = ['reader_file']
 
 
 class StegoAudioForm(forms.ModelForm):
@@ -21,9 +24,15 @@ class StegoAudioForm(forms.ModelForm):
         model = StegoAudio
         fields = ['message_file', 'original_audio', 'message', 'num_lsbs']
 
-class StegoAudioDecodeForm(forms.Form):
+
+class StegoAudioDecodeForm(forms.ModelForm):
     stego_audio = forms.FileField(label='Stego Audio')
     num_lsbs = forms.IntegerField(label='Number of LSBs', min_value=0, max_value=7)
+
+    class Meta:
+        model = StegoDecodeAudio
+        fields = ['message_file']
+
 
 class StegoTextForm(forms.Form):
     cover_file = forms.FileField(label="Select Cover File")

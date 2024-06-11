@@ -32,10 +32,12 @@
                 textMessageField.style.display = 'block';
                 fileMessageField.style.display = 'none';
                 toggleButton.innerText = 'Switch to File Input';
+                document.querySelector('#file-message-field input').value = '';
             } else {
                 textMessageField.style.display = 'none';
                 fileMessageField.style.display = 'block';
                 toggleButton.innerText = 'Switch to Text Input';
+                document.querySelector('#text-message-field textarea').value = '';
             }
         }
     </script>
@@ -75,20 +77,6 @@
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.non_field_errors }}
-                <div class="field" style="display: flex; white-space: nowrap;">
-                    <label class="label">Number of LSBs: </label>
-                    <div class="control" style="padding-left: 10px; width: 100%;">
-                        {{ form.num_lsbs }}
-                    </div>
-                </div>
-                <div class="field">
-                    <div id="drop-area">
-                        <p>Drag and drop an audio file here or click to select one</p>
-                        <input type="file" id="fileElem" accept="audio/*" style="display:none" name="original_audio">
-                        <img id="preview" src="#" alt="Audio preview" style="display:none;">
-                    </div>
-                    {{ form.original_audio.errors }}
-                </div>
                 <div class="field">
                     <button type="button" id="toggle-message-input" class="button is-secondary" onclick="toggleMessageInput()">Switch to File Input</button>
                 </div>
@@ -104,6 +92,21 @@
                         {{ form.message_file }}
                     </div>
                 </div>
+                <div class="field" style="display: flex; white-space: nowrap;">
+                    <label class="label">Number of LSBs: </label>
+                    <div class="control" style="padding-left: 10px; width: 100%;">
+                        {{ form.num_lsbs }}
+                    </div>
+                </div>
+                <div class="field">
+                    <div id="drop-area">
+                        <p>Drag and drop an audio file here or click to select one</p>
+                        <input type="file" id="fileElem" accept="audio/*" style="display:none" name="original_audio">
+                        <img id="preview" src="#" alt="Audio preview" style="display:none;">
+                    </div>
+                    {{ form.original_audio.errors }}
+                </div>
+                
                 <div class="field">
                     <div class="control">
                         <button type="submit" class="button is-primary" style="width: 100%;">Submit</button>

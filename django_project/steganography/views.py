@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.conf import settings
-from .forms import StegoImageForm, StegoDecodeForm, StegoAudioForm, StegoAudioDecodeForm, StegoTextForm
-from .models import StegoImage, StegoAudio
+from .forms import StegoImageForm, StegoImageDecodeForm, StegoAudioForm, StegoAudioDecodeForm, StegoTextForm
+from .models import StegoImage, StegoAudio, StegoDecodeAudio, StegoDecodeImage
 import cv2
 import numpy as np
 import math
@@ -122,7 +122,7 @@ from django.core.files.storage import FileSystemStorage
 def decode_image(request):
     global BITS, HIGH_BITS, LOW_BITS, BYTES_PER_BYTE
     if request.method == 'POST':
-        form = StegoDecodeForm(request.POST, request.FILES)
+        form = StegoImageDecodeForm(request.POST, request.FILES)
         if form.is_valid():
             stego_image = request.FILES['stego_image']
             file_path = os.path.join(settings.MEDIA_ROOT, 'stego_images', stego_image.name)
@@ -144,37 +144,40 @@ def decode_image(request):
                 # Store the decoded message in the session
                 request.session['message'] = decoded_message
 
-                # Handle file upload
-                if 'text_file' in request.FILES:
-                    text_file = request.FILES['text_file']
-                    file_storage = FileSystemStorage()
-                    filename = file_storage.save(text_file.name, text_file)
-                    uploaded_file_url = file_storage.url(filename)
+                operation_mode = request.POST.get('operation_mode', 'file')
 
-                    # Read the contents of the text file
-                    with open(file_storage.path(filename), 'r') as file:
-                        file_contents = file.read()
-                    
-                    # Render the decode_result template with the message and file contents
-                    return render(request, 'steganography/decode_result.html', {
-                        'message': decoded_message,
-                        'file_contents': file_contents,
-                    })
-                
-                # Redirect to the decode_image_results view if no file is uploaded
-                return redirect('decode_image_results')
+                if operation_mode == 'file':
+                    # Handle file upload
+                    if 'text_file' in request.FILES:
+                        text_file = request.FILES['text_file']
+                        file_storage = FileSystemStorage()
+                        filename = file_storage.save(text_file.name, text_file)
+                        uploaded_file_url = file_storage.url(filename)
+
+                        # Read the contents of the text file
+                        with open(file_storage.path(filename), 'r') as file:
+                            file_contents = file.read()
+
+                        # Render the decode_result template with the message and file contents
+                        return render(request, 'steganography/decode_result.html', {
+                            'message': decoded_message,
+                            'file_contents': file_contents,
+                        })
+
+                    # If no file is uploaded, return an error message
+                    form.add_error(None, "No file was uploaded.")
+                else:
+                    # Redirect to the decode_image_results view if no file is uploaded
+                    return redirect('decode_image_results')
             except Exception as e:
                 form.add_error(None, f"Error decoding message: {e}")
     else:
-        form = StegoDecodeForm()
+        form = StegoImageDecodeForm()
     return render(request, 'steganography/decode_image.html', {'form': form})
-
-
 
 def decode_image_results(request):
     # Retrieve the decoded message from the session
     message = request.session.get('message', '')
-
     # Render the decode_result.html template with the message
     return render(request, 'steganography/decode_result.html', {'message': message})
 

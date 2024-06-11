@@ -31,6 +31,25 @@
             width: 100%;
         }
     </style>
+    <script>
+        function toggleMessageInput() {
+            const textMessageField = document.getElementById('text-message-field');
+            const fileMessageField = document.getElementById('file-message-field');
+            const toggleButton = document.getElementById('toggle-message-input');
+
+            if (textMessageField.style.display === 'none') {
+                textMessageField.style.display = 'block';
+                fileMessageField.style.display = 'none';
+                toggleButton.innerText = 'Switch to File Input';
+                document.querySelector('#file-message-field input').value = '';
+            } else {
+                textMessageField.style.display = 'none';
+                fileMessageField.style.display = 'block';
+                toggleButton.innerText = 'Switch to Text Input';
+                document.querySelector('#text-message-field textarea').value = '';
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -64,45 +83,37 @@
     <section class="section">
 
         <div class="container">
-            <h1 class="title"><u>Embed a Secret Message in an Image</u></h1>
-
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.non_field_errors }}
+                <h1 class="title"><u>Embed a Secret Message in an Image</u></h1>
                 <div class="field">
-                    <div class="file has-name">
-                        <label class="file-label">
-                            <input class="file-input" type="file" name="stego_image" id="stego_image"
-                                onchange="updateLabel()">
-                            <span class="file-cta">
-                                <span class="file-icon">
-                                    <i class="fas fa-upload"></i>
-                                </span>
-                                <span class="file-label" id="file-label">
-                                    No file chosen
-                                </span>
-                            </span>
-                        </label>
-                    </div>
+                    <button type="button" id="toggle-message-input" class="button is-secondary" onclick="toggleMessageInput()">Switch to File Input</button>
                 </div>
-                <div class="field">
-                    <label class="label">Message</label>
+                <div class="field" id="text-message-field">
+                    <label class="label">Message to Embed:</label>
                     <div class="control">
                         {{ form.message }}
                     </div>
                 </div>
+                <div class="field" id="file-message-field" style="display: none;">
+                    <label class="label">Message File</label>
+                    <div class="control">
+                        {{ form.message_file }}
+                    </div>
+                </div>
                 <div class="field">
-                    <div class="field" style="display: flex; white-space: nowrap; ">
+                    <div class="field" style="display: flex; white-space: nowrap;">
                         <label class="label">Number of LSBs: </label>
                         <div class="control" style="padding-left: 10px; width: 100%;">
                             {{ form.num_lsbs }}
                         </div>
                     </div>
                     <div class="field">
+                        <label class="label">Add an image file: </label>
                         <div id="drop-area">
                             <p>Drag and drop an image here or click to select one</p>
-                            <input type="file" id="fileElem" accept="image/*" style="display:none"
-                                name="original_image">
+                            <input type="file" id="fileElem" accept="image/*" style="display:none" name="original_image">
                             <img id="preview" src="#" alt="Image preview" style="display:none;">
                         </div>
                         {{ form.original_image.errors }}
@@ -112,7 +123,7 @@
                             <button type="submit" style="width: 100%;" class="button is-primary">Embed</button>
                         </div>
                     </div>
-
+                </div>
             </form>
 
         </div>
@@ -123,7 +134,6 @@
             var label = document.getElementById('file-label');
             label.textContent = input.files.length > 0 ? input.files[0].name : 'No file chosen';
         }
-
 
         (function () {
             let dropArea = document.getElementById('drop-area');
@@ -170,8 +180,7 @@
                     fileInput.files = files;  // Set the file input's files property
                 }
             }
-        })
-            ();
+        })();
     </script>
 </body>
 

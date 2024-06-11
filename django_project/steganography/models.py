@@ -12,3 +12,9 @@ class StegoAudio(models.Model):
     original_audio = models.FileField(upload_to='stego_audio/original')
     message = models.TextField()
     stego_audio = models.FileField(upload_to='stego_audio/', null=True, blank=True)
+
+class StegoDecodeImage(models.Model):
+    reader_file = models.FileField(upload_to='stego_messages', null=True, blank=True)
+
+class StegoDecodeAudio(models.Model):
+    message_file = models.FileField(upload_to='stego_messages', null=True, blank=True)

@@ -32,61 +32,37 @@
 <body>
     <nav class="navbar is-link" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <a class="navbar-item" href="{% url 'home' %}">
-                Home
-            </a>
-
-            <a class="navbar-item" href="{% url 'embed' %}">
-                Encode Image
-            </a>
-
-            <a class="navbar-item" href="{% url 'decode_image' %}">
-                Decode Image
-            </a>
-
-            <a class="navbar-item" href="{% url 'embed_audio' %}">
-                Encode Audio
-            </a>
-
-            <a class="navbar-item" href="{% url 'decode_audio' %}">
-                Decode Audio
-            </a>
-            <a class="navbar-item" href="{% url 'encode_text' %}">
-                Encode Text File
-            </a>
+            <a class="navbar-item" href="{% url 'home' %}">Home</a>
+            <a class="navbar-item" href="{% url 'embed' %}">Encode Image</a>
+            <a class="navbar-item" href="{% url 'decode_image' %}">Decode Image</a>
+            <a class="navbar-item" href="{% url 'embed_audio' %}">Encode Audio</a>
+            <a class="navbar-item" href="{% url 'decode_audio' %}">Decode Audio</a>
+            <a class="navbar-item" href="{% url 'encode_text' %}">Encode Text File</a>
         </div>
     </nav>
-
 
     <section class="section">
         <div class="container">
             <h2 class="title"><u>Decode Stego Image</u></h2>
 
             <form method="post" enctype="multipart/form-data">
-
                 {% csrf_token %}
                 {{ form.non_field_errors }}
-                <div class="field">
-                    <div class="file has-name">
-                        <label class="file-label">
-                            <input class="file-input" type="file" name="stego_image" id="stego_image" onchange="updateLabel()">
-                            <span class="file-cta">
-                                <span class="file-icon">
-                                    <i class="fas fa-upload"></i>
-                                </span>
-                                <span class="file-label" id="file-label">
-                                    No file chosen
-                                </span>
-                            </span>
-                        </label>
+                
+                <div class="field", id="file-message-field">
+                    <label class="label">Message File</label>
+                    <div class="control">
+                        {{ form.reader_file }}
                     </div>
                 </div>
-                <div class="field" style="display: flex; white-space: nowrap; ">
+                
+                <div class="field" style="display: flex; white-space: nowrap;">
                     <label class="label">Number of LSBs: </label>
                     <div class="control" style="padding-left: 10px; width: 100%;">
                         {{ form.num_lsbs }}
                     </div>
                 </div>
+                
                 <div class="field">
                     <div id="drop-area">
                         <p>Drag and drop an image here or click to select one</p>
@@ -95,14 +71,24 @@
                     </div>
                     {{ form.stego_image.errors }}
                 </div>
+
+                <div class="field">
+                    <label class="label">Operation Mode</label>
+                    <div class="control">
+                        <button type="button" class="button is-info" id="toggle-button" onclick="toggleOperationMode()">Switch to Success Page</button>
+                        <input type="hidden" id="operation-mode" name="operation_mode" value="file">
+                    </div>
+                </div>
+
                 <div class="field">
                     <div class="control">
-                        <button type="submit" class="button is-primary " style="width: 100%;">Decode</button>
+                        <button type="submit" class="button is-primary" style="width: 100%;">Decode</button>
                     </div>
                 </div>
             </form>
         </div>
     </section>
+
     <script>
         function updateLabel() {
             var input = document.getElementById('stego_image');
@@ -152,10 +138,27 @@
                         preview.src = reader.result;
                         preview.style.display = 'block';
                     };
-                    fileInput.files = files;  // Set the file input's files property
+                    fileInput.files = files;
                 }
             }
         })();
+
+        function toggleOperationMode() {
+            let operationModeInput = document.getElementById('operation-mode');
+            let toggleButton = document.getElementById('toggle-button');
+            const fileMessageField = document.getElementById('file-message-field');
+            
+            if (operationModeInput.value === 'file') {
+                operationModeInput.value = 'success';
+                fileMessageField.style.display = 'none';
+                toggleButton.innerText = 'Switch to File';
+            } else {
+                operationModeInput.value = 'file';
+                fileMessageField.style.display = 'block';
+                toggleButton.innerText = 'Switch to Success Page';
+                document.querySelector('#file-message-field input').value = '';
+            }
+        }
     </script>
 </body>
 

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Decode Message from Audio</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+    <title>Decode Stego Image</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
     <style>
         #drop-area {
@@ -11,18 +13,22 @@
             text-align: center;
             margin: 20px 0;
         }
+
         #drop-area.hover {
             border-color: #333;
         }
+
         #drop-area img {
             max-width: 100%;
             margin-top: 10px;
         }
+
         .control input {
             width: 100%;
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar is-link" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
@@ -39,25 +45,33 @@
             </a>
 
             <a class="navbar-item" href="{% url 'embed_audio' %}">
-                Encode  Audio
+                Encode Audio
             </a>
 
             <a class="navbar-item" href="{% url 'decode_audio' %}">
-                Decode  Audio
+                Decode Audio
             </a>
-            <a  class="navbar-item" href="{% url 'encode_text' %}">
+            <a class="navbar-item" href="{% url 'encode_text' %}">
                 Encode Text File
             </a>
         </div>
     </nav>
+
     <section class="section">
-        
         <div class="container">
-            <h2 class="title"><u>Decode Message from Audio</u></h2>
-            
+            <h2 class="title"><u>Decode Stego Audio</u></h2>
+
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.non_field_errors }}
+                
+                <div class="field">
+                    <label class="label">Message File</label>
+                    <div class="control">
+                        {{ form.message_file }}
+                    </div>
+                </div>
+                
                 <div class="field" style="display: flex; white-space: nowrap;">
                     <label class="label">Number of LSBs: </label>
                     <div class="control" style="padding-left: 10px; width: 100%;">
@@ -66,22 +80,28 @@
                 </div>
                 <div class="field">
                     <div id="drop-area">
-                        <p>Drag and drop an audio file here or click to select one</p>
-                        <input type="file" id="fileElem" accept="audio/*" style="display:none" name="stego_audio">
-                        <img id="preview" src="#" alt="Audio preview" style="display:none;">
+                        <p>Drag and drop an Audio here or click to select one</p>
+                        <input type="file" id="fileElem" accept="image/*" style="display:none" name="stego_image">
+                        <img id="preview" src="#" alt="Image preview" style="display:none;">
                     </div>
                     {{ form.stego_audio.errors }}
                 </div>
                 <div class="field">
                     <div class="control">
-                        <button type="submit" class="button is-primary" style="width: 100%;">Submit</button>
+                        <button type="submit" class="button is-primary" style="width: 100%;">Decode</button>
                     </div>
                 </div>
             </form>
         </div>
     </section>
     <script>
-        (function() {
+        function updateLabel() {
+            var input = document.getElementById('stego_image');
+            var label = document.getElementById('file-label');
+            label.textContent = input.files.length > 0 ? input.files[0].name : 'No file chosen';
+        }
+
+        (function () {
             let dropArea = document.getElementById('drop-area');
             let fileInput = document.getElementById('fileElem');
             let preview = document.getElementById('preview');
@@ -119,7 +139,7 @@
                     let file = files[0];
                     let reader = new FileReader();
                     reader.readAsDataURL(file);
-                    reader.onloadend = function() {
+                    reader.onloadend = function () {
                         preview.src = reader.result;
                         preview.style.display = 'block';
                     };
@@ -129,4 +149,5 @@
         })();
     </script>
 </body>
+
 </html>
