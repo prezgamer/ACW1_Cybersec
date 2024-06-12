@@ -41,6 +41,7 @@
             <a class="navbar-item" href="{% url 'embed_audio' %}">Encode Audio</a>
             <a class="navbar-item" href="{% url 'decode_audio' %}">Decode Audio</a>
             <a class="navbar-item" href="{% url 'encode_text' %}">Encode Text File</a>
+            <a class="navbar-item" href="{% url 'decode_text' %}">Decode Text File</a>
         </div>
     </nav>
     <section class="section">
@@ -102,59 +103,72 @@
             </div>
     </section>
     <script>
-        function updateLabel() {
-            var input = document.getElementById('stego_image');
-            var label = document.getElementById('file-label');
-            label.textContent = input.files.length > 0 ? input.files[0].name : 'No file chosen';
+        (function () {
+        let dropArea = document.getElementById('drop-area');
+        let fileInput = document.getElementById('fileElem');
+        let preview = document.getElementById('preview');
+        let errorMessage = document.createElement('p');
+        errorMessage.style.color = 'red';
+        dropArea.appendChild(errorMessage);
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.add('hover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.remove('hover'), false);
+        });
+
+        dropArea.addEventListener('drop', handleDrop, false);
+        dropArea.addEventListener('click', () => fileInput.click(), false);
+        fileInput.addEventListener('change', handleFiles, false);
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
 
-        (function () {
-            let dropArea = document.getElementById('drop-area');
-            let fileInput = document.getElementById('fileElem');
-            let preview = document.getElementById('preview');
+        function handleDrop(e) {
+            let dt = e.dataTransfer;
+            let files = dt.files;
+            handleFiles({ target: { files } });
+        }
 
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, preventDefaults, false);
-            });
-
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropArea.addEventListener(eventName, () => dropArea.classList.add('hover'), false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, () => dropArea.classList.remove('hover'), false);
-            });
-
-            dropArea.addEventListener('drop', handleDrop, false);
-            dropArea.addEventListener('click', () => fileInput.click(), false);
-            fileInput.addEventListener('change', handleFiles, false);
-
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
+        function handleFiles(e) {
+            let files = e.target.files;
+            if (files.length > 1) {
+                // Display an error message if more than one file is selected
+                errorMessage.textContent = 'You can only upload one image. Please select a single image.';
+                fileInput.value = ''; // Clear the input
+                preview.style.display = 'none'; // Hide the preview
+                preview.src = ''; // Clear the preview source
+                return;
             }
+            errorMessage.textContent = ''; // Clear any previous error message
+            if (files.length > 0) {
+                let file = files[0];
 
-            function handleDrop(e) {
-                let dt = e.dataTransfer;
-                let files = dt.files;
-                handleFiles({ target: { files } });
+                // Clear the file input and preview first
+                fileInput.value = '';  // Reset the file input
+                preview.style.display = 'none';  // Hide the preview
+                preview.src = '';  // Clear the preview source
+
+                // Set the file input with the selected file
+                fileInput.files = e.target.files; 
+
+                let reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onloadend = function () {
+                    preview.src = reader.result;
+                    preview.style.display = 'block';
+                };
             }
-
-            function handleFiles(e) {
-                let files = e.target.files;
-                if (files.length > 0) {
-                    let file = files[0];
-                    let reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onloadend = function () {
-                        preview.src = reader.result;
-                        preview.style.display = 'block';
-                    };
-                    fileInput.files = files;  // Set the file input's files property
-                }
-            }
-        })();
-
+        }
+    })();
         function toggleMessageInput() {
           const textMessageField = document.getElementById('text-message-field');
           const fileMessageField = document.getElementById('file-message-field');

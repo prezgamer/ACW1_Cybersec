@@ -13,23 +13,26 @@
             text-align: center;
             margin: 20px 0;
         }
-
+    
         #drop-area.hover {
             border-color: #333;
         }
-
+    
         .control input {
             width: 100%;
         }
-
+    
         #file-preview {
             margin-top: 20px;
             white-space: pre-wrap;
             border: 1px solid #ddd;
             padding: 10px;
             background: #f9f9f9;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
         }
-    </style>
+    </style>    
 </head>
 
 <body>
@@ -95,16 +98,43 @@
         </div>
     </section>
     <script>
-        function updateLabel() {
-            var input = document.getElementById('stego_file');
-            var label = document.getElementById('file-label');
-            label.textContent = input.files.length > 0 ? input.files[0].name : 'No file chosen';
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
 
-        (function () {
+        function handleDrop(e) {
+            let dt = e.dataTransfer;
+            let files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            let errorMessage = document.getElementById('error-message');
+            if (files.length > 1) {
+                errorMessage.textContent = 'You can only upload one text file. Please select a single file.';
+                document.getElementById('fileElem').value = ''; // Clear the input
+                document.getElementById('file-preview').innerText = ''; // Clear the preview
+                return;
+            }
+            errorMessage.textContent = ''; // Clear any previous error message
+            if (files.length > 0) {
+                let file = files[0];
+                let reader = new FileReader();
+                reader.readAsText(file);
+                reader.onloadend = function () {
+                    document.getElementById('file-preview').innerText = reader.result;
+                    document.getElementById('fileElem').files = files;  // Set the file input's files property
+                };
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
             let dropArea = document.getElementById('drop-area');
             let fileInput = document.getElementById('fileElem');
-            let preview = document.getElementById('file-preview');
+            let errorMessage = document.createElement('p');
+            errorMessage.id = 'error-message';
+            dropArea.appendChild(errorMessage);
 
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 dropArea.addEventListener(eventName, preventDefaults, false);
@@ -120,33 +150,8 @@
 
             dropArea.addEventListener('drop', handleDrop, false);
             dropArea.addEventListener('click', () => fileInput.click(), false);
-            fileInput.addEventListener('change', handleFiles, false);
-
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
-            function handleDrop(e) {
-                let dt = e.dataTransfer;
-                let files = dt.files;
-                handleFiles({ target: { files } });
-            }
-
-            function handleFiles(e) {
-                let files = e.target.files;
-                if (files.length > 0) {
-                    let file = files[0];
-                    let reader = new FileReader();
-                    reader.readAsText(file);
-                    reader.onloadend = function () {
-                        preview.innerText = reader.result;
-                        preview.style.display = 'block';
-                    };
-                    fileInput.files = files;  // Set the file input's files property
-                }
-            }
-        })();
+            fileInput.addEventListener('change', (e) => handleFiles(e.target.files), false);
+        });
     </script>
 </body>
 

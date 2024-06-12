@@ -38,6 +38,7 @@
             <a class="navbar-item" href="{% url 'embed_audio' %}">Encode Audio</a>
             <a class="navbar-item" href="{% url 'decode_audio' %}">Decode Audio</a>
             <a class="navbar-item" href="{% url 'encode_text' %}">Encode Text File</a>
+            <a class="navbar-item" href="{% url 'decode_text' %}">Decode Text File</a>
         </div>
     </nav>
 
@@ -109,16 +110,13 @@
     </section>
 
     <script>
-        function updateLabel() {
-            var input = document.getElementById('stego_image');
-            var label = document.getElementById('file-label');
-            label.textContent = input.files.length > 0 ? input.files[0].name : 'No file chosen';
-        }
-
-        (function () {
+            (function () {
             let dropArea = document.getElementById('drop-area');
             let fileInput = document.getElementById('fileElem');
             let preview = document.getElementById('preview');
+            let errorMessage = document.createElement('p');
+            errorMessage.style.color = 'red';
+            dropArea.appendChild(errorMessage);
 
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 dropArea.addEventListener(eventName, preventDefaults, false);
@@ -149,15 +147,32 @@
 
             function handleFiles(e) {
                 let files = e.target.files;
+                if (files.length > 1) {
+                    // Display an error message if more than one file is selected
+                    errorMessage.textContent = 'You can only upload one image. Please select a single image.';
+                    fileInput.value = ''; // Clear the input
+                    preview.style.display = 'none'; // Hide the preview
+                    preview.src = ''; // Clear the preview source
+                    return;
+                }
+                errorMessage.textContent = ''; // Clear any previous error message
                 if (files.length > 0) {
                     let file = files[0];
+
+                    // Clear the file input and preview first
+                    fileInput.value = '';  // Reset the file input
+                    preview.style.display = 'none';  // Hide the preview
+                    preview.src = '';  // Clear the preview source
+
+                    // Set the file input with the selected file
+                    fileInput.files = e.target.files; 
+
                     let reader = new FileReader();
                     reader.readAsDataURL(file);
                     reader.onloadend = function () {
                         preview.src = reader.result;
                         preview.style.display = 'block';
                     };
-                    fileInput.files = files;
                 }
             }
         })();

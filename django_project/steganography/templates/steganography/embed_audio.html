@@ -58,14 +58,17 @@
             </a>
 
             <a class="navbar-item" href="{% url 'embed_audio' %}">
-                Encode  Audio
+                Encode Audio
             </a>
 
             <a class="navbar-item" href="{% url 'decode_audio' %}">
-                Decode  Audio
+                Decode Audio
             </a>
             <a  class="navbar-item" href="{% url 'encode_text' %}">
                 Encode Text File
+            </a>
+            <a  class="navbar-item" href="{% url 'decode_text' %}">
+                Decode Text File
             </a>
         </div>
     </nav>
@@ -77,27 +80,21 @@
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.non_field_errors }}
-                <div class="field">
-                    <button type="button" id="toggle-message-input" class="button is-secondary" onclick="toggleMessageInput()">Switch to File Input</button>
-                </div>
-                <div class="field" id="text-message-field">
-                    <label class="label">Message to Embed:</label>
-                    <div class="control">
-                        {{ form.message }}
-                    </div>
-                </div>
-                <div class="field" id="file-message-field" style="display: none;">
-                    <label class="label">Message File:</label>
-                    <div class="control">
+
+                <div class="field" style="display: flex; white-space: nowrap;">
+                    <label class="label">Message File: </label>
+                    <div class="control" style="padding-left: 10px; width: 100%;">
                         {{ form.message_file }}
                     </div>
                 </div>
+
                 <div class="field" style="display: flex; white-space: nowrap;">
                     <label class="label">Number of LSBs: </label>
                     <div class="control" style="padding-left: 10px; width: 100%;">
                         {{ form.num_lsbs }}
                     </div>
                 </div>
+
                 <div class="field">
                     <div id="drop-area">
                         <p>Drag and drop an audio file here or click to select one</p>

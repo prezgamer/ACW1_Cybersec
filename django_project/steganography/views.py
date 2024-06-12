@@ -310,7 +310,14 @@ def embed_audio(request):
             if original_audio_path.endswith('.mp3'):
                 original_audio_path = convert_to_wav(original_audio_path)
 
-            message = stego_audio.message
+            try:
+                message_file = request.FILES['message_file']
+                message = message_file.read().decode('utf-8')
+                stego_audio.message = message  # Save the message to the model
+            except Exception as e:
+                form.add_error('message_file', f"Error reading message file: {e}")
+                return render(request, 'steganography/embed_audio.html', {'form': form})
+            
             bits = form.cleaned_data['num_lsbs']
             static_file_name = f"{stego_audio.pk}_stego_audio.wav"
             output_path = os.path.join(settings.MEDIA_ROOT, "stego_audio", static_file_name)
@@ -338,6 +345,7 @@ def decode_audio(request):
     if request.method == 'POST':
         form = StegoAudioDecodeForm(request.POST, request.FILES)
         if form.is_valid():
+            print("it is a post request")
             stego_audio = request.FILES['stego_audio']
             file_path = os.path.join(settings.MEDIA_ROOT, 'stego_audio', stego_audio.name)
 
@@ -351,12 +359,14 @@ def decode_audio(request):
             bits = form.cleaned_data['num_lsbs']
             try:
                 decoded_message = extractAudio(file_path, bits)
+                print("able to decode audio")
                 os.remove(file_path)  # Clean up the temporary file
                 return render(request, 'steganography/decode_audio_result.html', {'message': decoded_message})
             except Exception as e:
                 form.add_error(None, f"Error decoding audio message: {e}")
     else:
         form = StegoAudioDecodeForm()
+        print("not a post request")
     return render(request, 'steganography/decode_audio.html', {'form': form})
 
 def decodeAudio(block, bits):

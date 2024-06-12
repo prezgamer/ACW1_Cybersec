@@ -6,6 +6,35 @@
     <title>Result Audio</title>
 </head>
 <body>
+    <nav class="navbar is-link" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'home' %}">
+                Home
+            </a>
+
+            <a class="navbar-item" href="{% url 'embed' %}">
+                Encode Image
+            </a>
+
+            <a class="navbar-item" href="{% url 'decode_image' %}">
+                Decode Image
+            </a>
+
+            <a class="navbar-item" href="{% url 'embed_audio' %}">
+                Encode Audio
+            </a>
+
+            <a class="navbar-item" href="{% url 'decode_audio' %}">
+                Decode Audio
+            </a>
+            <a class="navbar-item" href="{% url 'encode_text' %}">
+                Encode Text File
+            </a>
+            <a  class="navbar-item" href="{% url 'decode_text' %}">
+                Decode Text File
+            </a>
+        </div>
+    </nav>
     <h1>Audio Steganography Result</h1>
     <p>Download your encoded audio file:</p>
     <a href="{{ stego_audio.stego_audio.url }}" download>Download Encoded Audio</a>
