@@ -310,7 +310,14 @@ def embed_audio(request):
             if original_audio_path.endswith('.mp3'):
                 original_audio_path = convert_to_wav(original_audio_path)
 
-            message = stego_audio.message
+            try:
+                message_file = request.FILES['message_file']
+                message = message_file.read().decode('utf-8')
+                stego_audio.message = message  # Save the message to the model
+            except Exception as e:
+                form.add_error('message_file', f"Error reading message file: {e}")
+                return render(request, 'steganography/embed_audio.html', {'form': form})
+            
             bits = form.cleaned_data['num_lsbs']
             static_file_name = f"{stego_audio.pk}_stego_audio.wav"
             output_path = os.path.join(settings.MEDIA_ROOT, "stego_audio", static_file_name)
