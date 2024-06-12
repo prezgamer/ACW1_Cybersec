@@ -3,7 +3,7 @@
 
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
-    <title>Decode Stego Image</title>
+    <title>Decode Stego Audio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
     <style>
         #drop-area {
@@ -18,7 +18,7 @@
             border-color: #333;
         }
 
-        #drop-area img {
+        #drop-area audio {
             max-width: 100%;
             margin-top: 10px;
         }
@@ -32,31 +32,13 @@
 <body>
     <nav class="navbar is-link" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <a class="navbar-item" href="{% url 'home' %}">
-                Home
-            </a>
-
-            <a class="navbar-item" href="{% url 'embed' %}">
-                Encode Image
-            </a>
-
-            <a class="navbar-item" href="{% url 'decode_image' %}">
-                Decode Image
-            </a>
-
-            <a class="navbar-item" href="{% url 'embed_audio' %}">
-                Encode Audio
-            </a>
-
-            <a class="navbar-item" href="{% url 'decode_audio' %}">
-                Decode Audio
-            </a>
-            <a class="navbar-item" href="{% url 'encode_text' %}">
-                Encode Text File
-            </a>
-            <a  class="navbar-item" href="{% url 'decode_text' %}">
-                Decode Text File
-            </a>
+            <a class="navbar-item" href="{% url 'home' %}">Home</a>
+            <a class="navbar-item" href="{% url 'embed' %}">Encode Image</a>
+            <a class="navbar-item" href="{% url 'decode_image' %}">Decode Image</a>
+            <a class="navbar-item" href="{% url 'embed_audio' %}">Encode Audio</a>
+            <a class="navbar-item" href="{% url 'decode_audio' %}">Decode Audio</a>
+            <a class="navbar-item" href="{% url 'encode_text' %}">Encode Text File</a>
+            <a class="navbar-item" href="{% url 'decode_text' %}">Decode Text File</a>
         </div>
     </nav>
 
@@ -68,24 +50,19 @@
                 {% csrf_token %}
                 {{ form.non_field_errors }}
                 
-                <!-- <div class="field" style="display: flex; white-space: nowrap;">
-                    <label class="label">Message File: </label>
-                    <div class="control" style="padding-left: 10px; width: 100%;">
-                        {{ form.message_file }}
-                    </div>
-                </div>
-                 -->
-                <div class="field" style="display: flex; white-space: nowrap;">
+                <div class="field">
                     <label class="label">Number of LSBs: </label>
-                    <div class="control" style="padding-left: 10px; width: 100%;">
+                    <div class="control">
                         {{ form.num_lsbs }}
                     </div>
                 </div>
+                
                 <div class="field">
+                    <label class="label">Encoded Audio:</label>
                     <div id="drop-area">
-                        <p>Drag and drop an Audio here or click to select one</p>
-                        <input type="file" id="fileElem" accept="image/*" style="display:none" name="stego_image">
-                        <img id="preview" src="#" alt="Image preview" style="display:none;">
+                        <p>Drag and drop an audio file here or click to select one</p>
+                        <input type="file" id="fileElem" accept="audio/*" style="display:none" name="stego_audio">
+                        <audio id="preview" controls style="display:none;"></audio>
                     </div>
                     {{ form.stego_audio.errors }}
                 </div>
@@ -98,17 +75,15 @@
             </form>
         </div>
     </section>
-    <script>
-        function updateLabel() {
-            var input = document.getElementById('stego_image');
-            var label = document.getElementById('file-label');
-            label.textContent = input.files.length > 0 ? input.files[0].name : 'No file chosen';
-        }
 
+    <script>
         (function () {
             let dropArea = document.getElementById('drop-area');
             let fileInput = document.getElementById('fileElem');
             let preview = document.getElementById('preview');
+            let errorMessage = document.createElement('p');
+            errorMessage.style.color = 'red';
+            dropArea.appendChild(errorMessage);
 
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 dropArea.addEventListener(eventName, preventDefaults, false);
@@ -139,35 +114,35 @@
 
             function handleFiles(e) {
                 let files = e.target.files;
+                if (files.length > 1) {
+                    // Display an error message if more than one file is selected
+                    errorMessage.textContent = 'You can only upload one audio file. Please select a single audio file.';
+                    fileInput.value = ''; // Clear the input
+                    preview.style.display = 'none'; // Hide the preview
+                    preview.src = ''; // Clear the preview source
+                    return;
+                }
+                errorMessage.textContent = ''; // Clear any previous error message
                 if (files.length > 0) {
                     let file = files[0];
+
+                    // Clear the file input and preview first
+                    fileInput.value = '';  // Reset the file input
+                    preview.style.display = 'none';  // Hide the preview
+                    preview.src = '';  // Clear the preview source
+
+                    // Set the file input with the selected file
+                    fileInput.files = e.target.files; 
+
                     let reader = new FileReader();
                     reader.readAsDataURL(file);
                     reader.onloadend = function () {
                         preview.src = reader.result;
                         preview.style.display = 'block';
                     };
-                    fileInput.files = files;  // Set the file input's files property
                 }
             }
         })();
-
-        function toggleOperationMode() {
-            let operationModeInput = document.getElementById('operation-mode');
-            let toggleButton = document.getElementById('toggle-button');
-            const fileMessageField = document.getElementById('file-message-field');
-            
-            if (operationModeInput.value === 'file') {
-                operationModeInput.value = 'success';
-                fileMessageField.style.display = 'none';
-                toggleButton.innerText = 'Switch to File';
-            } else {
-                operationModeInput.value = 'file';
-                fileMessageField.style.display = 'block';
-                toggleButton.innerText = 'Switch to Success Page';
-                document.querySelector('#file-message-field input').value = '';
-            }
-        }
     </script>
 </body>
 

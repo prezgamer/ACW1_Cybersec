@@ -58,8 +58,21 @@
         {% csrf_token %}
         {{ form.as_p }}
         <div class="drop-zone" id="drop-zone">
+            <audio id="preview" controls style="display:none;"></audio>
             Drag and drop your audio file here
         </div>
+
+        <!-- <div class="field">
+            <label class="label">Encoded Audio:</label>
+            <div id="drop-area">
+                <p>Drag and drop an audio file here or click to select one</p>
+                <input type="file" id="fileElem" accept="audio/*" style="display:none" name="stego_audio">
+                <audio id="preview" controls style="display:none;"></audio>
+            </div>
+            {{ form.stego_audio.errors }}
+        </div> -->
+
+
         <input type="file" id="file-input" name="original_audio" style="display: none;" />
         <button type="submit">Encode</button>
     </form>

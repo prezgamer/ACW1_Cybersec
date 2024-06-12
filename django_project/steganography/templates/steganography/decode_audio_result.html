@@ -1,4 +1,47 @@
-{% block content %}
-  <h2>Decoded Message from Audio</h2>
-  <p>{{ message }}</p>
-{% endblock %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+    <title>Decode Message from Audio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+    <style>
+        .message-box {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .message-box p {
+            font-size: 1.2em;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar is-link" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'home' %}">Home</a>
+            <a class="navbar-item" href="{% url 'embed' %}">Encode Image</a>
+            <a class="navbar-item" href="{% url 'decode_image' %}">Decode Image</a>
+            <a class="navbar-item" href="{% url 'embed_audio' %}">Encode Audio</a>
+            <a class="navbar-item" href="{% url 'decode_audio' %}">Decode Audio</a>
+            <a class="navbar-item" href="{% url 'encode_text' %}">Encode Text File</a>
+            <a class="navbar-item" href="{% url 'decode_text' %}">Decode Text File</a>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="title"><u>Decoded Message from Audio</u></h2>
+            <div class="message-box">
+                <p>{{ message }}</p>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

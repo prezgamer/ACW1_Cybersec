@@ -31,7 +31,7 @@ class StegoAudioDecodeForm(forms.ModelForm):
 
     class Meta:
         model = StegoDecodeAudio
-        fields = ['message_file']
+        fields = []
 
 
 class StegoTextForm(forms.Form):
