@@ -2,7 +2,7 @@ from django import forms
 from .models import StegoImage, StegoAudio, StegoDecodeImage, StegoDecodeAudio
 
 class StegoImageForm(forms.ModelForm):
-    num_lsbs = forms.IntegerField(min_value=0, max_value=7, label="Number of LSBs")
+    num_lsbs = forms.IntegerField(min_value=1, max_value=8, label="Number of LSBs")
     class Meta:
         model = StegoImage
         fields = ['message_file','original_image','num_lsbs']
@@ -10,7 +10,7 @@ class StegoImageForm(forms.ModelForm):
 
 class StegoImageDecodeForm(forms.ModelForm):
     stego_image = forms.ImageField()
-    num_lsbs = forms.IntegerField(min_value=0, max_value=7, label="Number of LSBs")
+    num_lsbs = forms.IntegerField(min_value=1, max_value=8, label="Number of LSBs")
 
     class Meta:
         model = StegoDecodeImage
