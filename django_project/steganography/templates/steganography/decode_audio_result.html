@@ -12,11 +12,18 @@
             border-radius: 5px;
             margin-top: 20px;
             border: 1px solid #ddd;
+            text-align: center;  /* Center the text inside the box */
         }
 
         .message-box p {
             font-size: 1.2em;
             color: #333;
+        }
+
+        .download-button {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
         }
     </style>
 </head>
@@ -38,10 +45,30 @@
         <div class="container">
             <h2 class="title"><u>Decoded Message from Audio</u></h2>
             <div class="message-box">
-                <p>{{ message }}</p>
+                <p id="decoded-message">{{ message }}</p>
+            </div>
+            <div class="field download-button">
+                <div class="control">
+                    <button class="button is-primary" onclick="downloadMessage()">Download Message</button>
+                </div>
             </div>
         </div>
     </section>
+
+    <script>
+        function downloadMessage() {
+            const message = document.getElementById('decoded-message').innerText;
+            const blob = new Blob([message], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'decoded_message.txt';
+            document.body.appendChild(a);
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
 </body>
 
 </html>
