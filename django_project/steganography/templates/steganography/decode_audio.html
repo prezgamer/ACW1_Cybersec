@@ -65,9 +65,9 @@
                 {% csrf_token %}
                 {{ form.non_field_errors }}
                 
-                <div class="field" id="file-message-field">
-                    <label class="label">Message File</label>
-                    <div class="control">
+                <div class="field" style="display: flex; white-space: nowrap;">
+                    <label class="label">Message File: </label>
+                    <div class="control" style="padding-left: 10px; width: 100%;">
                         {{ form.message_file }}
                     </div>
                 </div>
@@ -85,14 +85,6 @@
                         <img id="preview" src="#" alt="Image preview" style="display:none;">
                     </div>
                     {{ form.stego_audio.errors }}
-                </div>
-
-                <div class="field">
-                    <label class="label">Operation Mode</label>
-                    <div class="control">
-                        <button type="button" class="button is-info" id="toggle-button" onclick="toggleOperationMode()">Switch to Success Page</button>
-                        <input type="hidden" id="operation-mode" name="operation_mode" value="file">
-                    </div>
                 </div>
 
                 <div class="field">
