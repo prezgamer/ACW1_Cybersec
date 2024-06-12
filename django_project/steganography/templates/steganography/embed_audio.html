@@ -3,6 +3,7 @@
 <head>
     <title>Embed Message in Audio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
     <style>
         #drop-area {
             border: 2px dashed #009688;
@@ -13,10 +14,6 @@
         }
         #drop-area.hover {
             border-color: #333;
-        }
-        #drop-area img {
-            max-width: 100%;
-            margin-top: 10px;
         }
         .control input {
             width: 100%;
@@ -45,61 +42,62 @@
 <body>
     <nav class="navbar is-link" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <a class="navbar-item" href="{% url 'home' %}">
-                Home
-            </a>
-
-            <a class="navbar-item" href="{% url 'embed' %}">
-                Encode Image
-            </a>
-
-            <a class="navbar-item" href="{% url 'decode_image' %}">
-                Decode Image
-            </a>
-
-            <a class="navbar-item" href="{% url 'embed_audio' %}">
-                Encode Audio
-            </a>
-
-            <a class="navbar-item" href="{% url 'decode_audio' %}">
-                Decode Audio
-            </a>
-            <a  class="navbar-item" href="{% url 'encode_text' %}">
-                Encode Text File
-            </a>
-            <a  class="navbar-item" href="{% url 'decode_text' %}">
-                Decode Text File
-            </a>
+            <a class="navbar-item" href="{% url 'home' %}">Home</a>
+            <a class="navbar-item" href="{% url 'embed' %}">Encode Image</a>
+            <a class="navbar-item" href="{% url 'decode_image' %}">Decode Image</a>
+            <a class="navbar-item" href="{% url 'embed_audio' %}">Encode Audio</a>
+            <a class="navbar-item" href="{% url 'decode_audio' %}">Decode Audio</a>
+            <a class="navbar-item" href="{% url 'encode_text' %}">Encode Text File</a>
+            <a class="navbar-item" href="{% url 'decode_text' %}">Decode Text File</a>
         </div>
     </nav>
     <section class="section">
-        
         <div class="container">
             <h2 class="title"><u>Embed Message in Audio</u></h2>
-            
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.non_field_errors }}
-
-                <div class="field" style="display: flex; white-space: nowrap;">
-                    <label class="label">Message File: </label>
-                    <div class="control" style="padding-left: 10px; width: 100%;">
-                        {{ form.message_file }}
+                
+                <div class="field">
+                    <div class="field" id="file-message-field">
+                        <label class="label">Message File</label>
+                        <div class="control">
+                            <div class="file has-name is-boxed">
+                                <label class="file-label">
+                                    <input class="file-input" type="file" name="message_file" id="reader_file_input">
+                                    <span class="file-cta">
+                                        <span class="icon">
+                                            <i class="fas fa-upload"></i>
+                                        </span>
+                                        <span class="file-label">
+                                            Choose a file…
+                                        </span>
+                                    </span>
+                                    <span class="file-name">
+                                        No file uploaded
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
+                
                 <div class="field" style="display: flex; white-space: nowrap;">
                     <label class="label">Number of LSBs: </label>
                     <div class="control" style="padding-left: 10px; width: 100%;">
                         {{ form.num_lsbs }}
                     </div>
                 </div>
-
+                
                 <div class="field">
+                    <label class="label">Add an audio file: </label>
                     <div id="drop-area">
                         <p>Drag and drop an audio file here or click to select one</p>
                         <input type="file" id="fileElem" accept="audio/*" style="display:none" name="original_audio">
-                        <img id="preview" src="#" alt="Audio preview" style="display:none;">
+                        <audio id="preview" controls style="display:none;">
+                            <source src="#" type="audio/wav">
+                            Your browser does not support the audio element.
+                        </audio>
                     </div>
                     {{ form.original_audio.errors }}
                 </div>
@@ -117,6 +115,9 @@
             let dropArea = document.getElementById('drop-area');
             let fileInput = document.getElementById('fileElem');
             let preview = document.getElementById('preview');
+            let errorMessage = document.createElement('p');
+            errorMessage.style.color = 'red';
+            dropArea.appendChild(errorMessage);
 
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 dropArea.addEventListener(eventName, preventDefaults, false);
@@ -147,18 +148,40 @@
 
             function handleFiles(e) {
                 let files = e.target.files;
+                if (files.length > 1) {
+                    // Display an error message if more than one file is selected
+                    errorMessage.textContent = 'You can only upload one audio file. Please select a single audio file.';
+                    fileInput.value = ''; // Clear the input
+                    preview.style.display = 'none'; // Hide the preview
+                    preview.src = ''; // Clear the preview source
+                    return;
+                }
+                errorMessage.textContent = ''; // Clear any previous error message
                 if (files.length > 0) {
                     let file = files[0];
+
+                    // Clear the file input and preview first
+                    fileInput.value = '';  // Reset the file input
+                    preview.style.display = 'none';  // Hide the preview
+                    preview.src = '';  // Clear the preview source
+
+                    // Set the file input with the selected file
+                    fileInput.files = e.target.files; 
+
                     let reader = new FileReader();
                     reader.readAsDataURL(file);
-                    reader.onloadend = function() {
+                    reader.onloadend = function () {
                         preview.src = reader.result;
                         preview.style.display = 'block';
                     };
-                    fileInput.files = files;  // Set the file input's files property
                 }
             }
         })();
+        
+        document.getElementById('reader_file_input').addEventListener('change', function() {
+            const fileName = document.querySelector('.file-name');
+            fileName.textContent = this.files.length > 0 ? this.files[0].name : 'No file uploaded';
+        });
     </script>
 </body>
 </html>
