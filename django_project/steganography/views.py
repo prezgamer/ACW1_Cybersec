@@ -345,6 +345,7 @@ def decode_audio(request):
     if request.method == 'POST':
         form = StegoAudioDecodeForm(request.POST, request.FILES)
         if form.is_valid():
+            print("it is a post request")
             stego_audio = request.FILES['stego_audio']
             file_path = os.path.join(settings.MEDIA_ROOT, 'stego_audio', stego_audio.name)
 
@@ -358,12 +359,14 @@ def decode_audio(request):
             bits = form.cleaned_data['num_lsbs']
             try:
                 decoded_message = extractAudio(file_path, bits)
+                print("able to decode audio")
                 os.remove(file_path)  # Clean up the temporary file
                 return render(request, 'steganography/decode_audio_result.html', {'message': decoded_message})
             except Exception as e:
                 form.add_error(None, f"Error decoding audio message: {e}")
     else:
         form = StegoAudioDecodeForm()
+        print("not a post request")
     return render(request, 'steganography/decode_audio.html', {'form': form})
 
 def decodeAudio(block, bits):
