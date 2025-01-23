@@ -18,3 +18,10 @@ We use LSB bits to help mask the text that is encoded in the image, audio or tex
 
 Therefore making the the bits to show a different type of image, text, audio
 
+## How to run the application
+
+First do [ cd .\ACW1_Cybersec\django_project\ ] 
+
+next do [ python manage.py migrate ] and [ python manage.py makemigrations ], in case there is any project migrations.
+
+next do [ python manage.py runserver ] to run the private server on your VM to see the project
